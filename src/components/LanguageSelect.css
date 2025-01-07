@@ -1,0 +1,113 @@
+/* Container styles */
+.language-select-container {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f9f9f9;
+    min-height: 100vh; /* Ensure container takes full viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute header, content, and footer */
+    overflow: hidden;
+}
+
+/* Header styles */
+.language-select-header {
+    background-color: #002855;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.language-select-header .logo {
+    display: flex;
+    align-items: center;
+}
+
+.language-select-header .logo img {
+    height: 50px;
+    margin-right: 10px;
+}
+
+.language-select-header .logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.language-select-header .logo-text span {
+    color: #ffd700; /* Gold color */
+}
+
+/* Content styles */
+.language-select-content {
+    flex-grow: 1; /* Allow content to expand and push footer to bottom */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the content vertically */
+    align-items: center;
+    padding: 20px;
+}
+
+.language-select-content h2 {
+    font-size: 1.8rem;
+    color: #002855;
+    margin-bottom: 40px;
+}
+
+.language-options {
+    display: flex;
+    gap: 50px;
+}
+
+.language-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.language-icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+}
+
+.sinhala-button,
+.english-button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+.sinhala-button {
+    background-color: #ffcc00;
+    color: #002855;
+}
+
+.sinhala-button:hover {
+    background-color: #ffd633;
+}
+
+.english-button {
+    background-color: #0066cc;
+    color: white;
+}
+
+.english-button:hover {
+    background-color: #005bb5;
+}
+
+/* Footer styles */
+.language-select-footer {
+    background-color: #002855;
+    color: white;
+    padding: 70px; /* Proper padding for the footer */
+    text-align: center;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}

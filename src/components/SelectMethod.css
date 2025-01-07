@@ -1,0 +1,101 @@
+.select-language-container {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .select-language-header {
+    background-color: #002855;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 10px;
+  }
+  
+  .select-language-header .logo img {
+    height: 50px;
+    width: auto;
+  }
+  
+  .select-language-content {
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .select-language-content h2 {
+    color: #002855;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .select-language-content p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .select-language-content ul {
+    text-align: left;
+    list-style-type: disc;
+    margin: 20px 40px;
+    color: #333;
+  }
+  
+  .select-language-content ul li {
+    margin-bottom: 10px;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .text-button, .voice-button {
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .text-button {
+    background-color: #ffcc00; /* Yellow */
+    color: #002855; /* Dark Blue */
+  }
+  
+  .text-button:hover {
+    background-color: #ffd633;
+  }
+  
+  .voice-button {
+    background-color: #002855; /* Dark Blue */
+    color: white;
+  }
+  
+  .voice-button:hover {
+    background-color: #004aad;
+  }
+
+/* Footer background design */
+.select-language-footer::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 150%;
+    height: 10%;
+    background: linear-gradient(to left, #ffcc00, #003366);
+    z-index: -1;
+}

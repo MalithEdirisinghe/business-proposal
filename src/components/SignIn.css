@@ -1,0 +1,94 @@
+.sign-in-container {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .sign-in-image {
+    flex: 1;
+  }
+  
+  .sign-in-image img {
+    width: 75%;
+    object-fit: cover;
+  }
+  
+  .sign-in-form {
+    flex: 1;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  
+  .sign-in-form h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .sign-in-form p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  
+  .sign-in-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .sign-in-form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .sign-in-form .terms {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sign-in-form .sign-in-btn {
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #002855;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 40%;
+    align-self: center;
+  }
+  
+  .sign-in-form .sign-in-btn:hover {
+    background-color: #004080;
+  }
+  
+  .or-continue {
+    text-align: center;
+    margin-top: 20px;
+    color: #7a7575;
+  }
+  
+  .google-btn, .facebook-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 5px;
+  }
+  
+  .google-btn {
+    background-color: #db4437;
+    color: white;
+  }
+  
+  .facebook-btn {
+    background-color: #4267b2;
+    color: white;
+  }
+  

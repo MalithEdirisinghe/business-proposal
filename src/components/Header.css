@@ -1,0 +1,71 @@
+/* Header container styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #002855; /* Navy blue background */
+  height: 70px;
+}
+
+/* Logo container styles */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo link styles */
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Remove underline */
+  color: white;
+}
+
+/* Logo image styles */
+.logo {
+  height: 40px; /* Adjust logo height */
+  margin-right: 10px; /* Space between logo and text */
+}
+
+/* Logo text styles */
+.logo-text {
+  font-size: 18px; /* Adjust font size */
+  font-weight: bold;
+  color: white;
+  text-align: left;
+}
+
+.logo-text span {
+  color: white;
+  text-align: left;
+}
+
+/* Navigation and button styles */
+nav .actions, .logout-btn {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-btn {
+  background-color: #ffd700; /* Gold color */
+  color: #003366; /* Navy blue text */
+}
+
+.sign-in-btn {
+  background-color: #003366; /* Navy blue */
+  color: #ffd700; /* Gold text */
+  border: 1px solid #ffd700;
+}
+
+.logout-btn button {
+  background-color: #ff4500; /* Orange for logout */
+  color: white;
+}

@@ -1,0 +1,45 @@
+.section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    margin: 20px 0;
+  }
+  
+  .section-content {
+    flex: 1;
+    padding-right: 20px;
+  }
+  
+  .section-content h2 {
+    font-size: 1.8rem;
+    color: #003366;
+    margin-bottom: 10px;
+  }
+  
+  .section-content p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  
+  .section-content button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .section-content button:hover {
+    background-color: #0056b3;
+  }
+  
+  .section-image img {
+    max-width: 50%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
