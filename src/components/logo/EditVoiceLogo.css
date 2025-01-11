@@ -1,0 +1,115 @@
+.edit-voice-logo-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+  }
+  
+  .left-panel {
+    width: 40%;
+    background-color: #003366;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .branding h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .instruction h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .dots-section {
+    display: flex;
+    margin-top: 20px;
+  }
+  
+  .dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin: 0 5px;
+  }
+  
+  .dot.yellow {
+    background-color: #ffcc00;
+  }
+  
+  .dot.green {
+    background-color: #33cc33;
+  }
+  
+  .dot.blue {
+    background-color: #3399ff;
+  }
+  
+  .dot.red {
+    background-color: #ff3300;
+  }
+  
+  .right-panel {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #ffcc33;
+  }
+  
+  .right-panel h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .image-placeholder {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ddd;
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+  }
+  
+  .logo-image {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+  }
+  
+  .microphone-icon {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #003366;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  
+  .back-button:hover {
+    background-color: #0055aa;
+  }
+  
+  .back-button svg {
+    margin-right: 10px;
+  }
+  

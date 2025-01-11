@@ -10,7 +10,10 @@ import SelectMethod from './components/SelectMethod';
 import LanguageSelect from './components/LanguageSelect';
 import TextRecord from './components/TextRecord';
 import VoiceRecord from './components/VoiceRecord';
+import ProposalGeneration from './components/ProposalGeneration';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
+import UploadImage from './components/logo/UploadImage';
+import EditVoiceLogo from './components/logo/EditVoiceLogo';
 import proposal_img from './assets/proposal.png';
 import logo_creation from './assets/logo_creation.png';
 import web_img from './assets/web_for_business.png';
@@ -106,6 +109,9 @@ const App = () => {
         <Route path="/text-record" element={<TextRecord isAuthenticated={isAuthenticated} />} />
         <Route path="/voice-record" element={<VoiceRecord isAuthenticated={isAuthenticated} />} />
         <Route path="/select-method-logo" element={<SelectMethodLogo isAuthenticated={isAuthenticated} />} />
+        <Route path="/proposal-generation" element={<ProposalGeneration isAuthenticated={isAuthenticated} />} />
+        <Route path="/upload-image" element={<UploadImage isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-voice-logo" element={<EditVoiceLogo isAuthenticated={isAuthenticated} />} />
       </Routes>
       {/* Always display the footer on the home page */}
       {location.pathname === '/' && <Footer />}

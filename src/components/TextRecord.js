@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./TextRecord.css";
 import { BsUpload } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -33,6 +34,7 @@ const translations = {
 };
 
 const TextRecord = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { language } = location.state || {};
   const content = translations[language] || translations.English;
@@ -144,6 +146,11 @@ const TextRecord = () => {
       const missingInfoStatus = Math.random() > 0.5 ? "Yes" : "No"; // Simulated response
       setMissingInfo(missingInfoStatus);
       setUploadStatus(`Upload successful! Missing Info: ${missingInfoStatus}`);
+
+      if (missingInfoStatus === "No") {
+        navigate("/proposal-generation"); // Navigate to ProposalGeneration.js
+      }
+
     } catch (error) {
       console.error("Error uploading to ML:", error);
       setUploadStatus("Upload failed. Please try again.");
@@ -153,6 +160,10 @@ const TextRecord = () => {
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+  };
+
+  const handleSkipAndContinue = () => {
+    navigate("/proposal-generation"); // Navigate when skipping
   };
 
   return (
@@ -268,7 +279,7 @@ const TextRecord = () => {
             <div className="missing-info-actions">
               <button
                 className="skip-button"
-                onClick={() => setMissingInfo(null)}
+                onClick={handleSkipAndContinue}
               >
                 {content.skipAndContinue}
               </button>

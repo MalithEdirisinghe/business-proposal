@@ -9,7 +9,7 @@ const SelectMethodLogo = () => {
   };
 
   const handleUploadClick = () => {
-    navigate("/upload"); // Navigate to the Upload page
+    navigate("/upload-image"); // Navigate to the UploadImage page
   };
 
   return (
@@ -22,14 +22,18 @@ const SelectMethodLogo = () => {
         </p>
         <ul>
           <li>
-            <b>Input Your Text:</b> You can type a description of your logo, and our system will create a logo based on your text input.
+            <b>Input Your Text:</b> You can type a description of your logo, and
+            our system will create a logo based on your text input.
           </li>
           <li>
-            <b>Upload and Crop an Image:</b> Simply upload an image, crop the section you want, and let our system analyze it to generate a custom logo for you.
+            <b>Upload and Crop an Image:</b> Simply upload an image, crop the
+            section you want, and let our system analyze it to generate a custom
+            logo for you.
           </li>
         </ul>
         <p>
-          Once the logo is generated, you can edit and refine it using voice commands, making it quick and easy to customize your design.
+          Once the logo is generated, you can edit and refine it using voice
+          commands, making it quick and easy to customize your design.
         </p>
         <div className="button-container">
           <button className="text-button" onClick={handleTextClick}>
