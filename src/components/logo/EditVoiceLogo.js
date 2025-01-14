@@ -1,17 +1,114 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import "./EditVoiceLogo.css";
-import { FaMicrophone, FaArrowLeft } from "react-icons/fa";
+import { FaMicrophone, FaTimes } from "react-icons/fa";
 
 const EditVoiceLogo = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Get the image URL from the passed state
   const imageUrl = location.state?.imageUrl;
 
-  const goBack = () => {
-    navigate(-1); // Navigate back to the previous page
+  const [logoName, setLogoName] = useState("");
+  const [slogan, setSlogan] = useState("");
+  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [fontSize, setFontSize] = useState(22);
+  const [listeningFor, setListeningFor] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImageBlob, setGeneratedImageBlob] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const startListening = (field) => {
+    setListeningFor(field);
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const spokenText = event.results[0][0].transcript.trim().toLowerCase().replace(/[.,!?]+$/, "");
+
+      if (field === "logoName") {
+        setLogoName(spokenText);
+      } else if (field === "slogan") {
+        setSlogan(spokenText);
+      } else if (field === "backgroundColor") {
+        const validColors = ["white", "red", "green", "blue", "black"];
+        if (validColors.includes(spokenText)) {
+          setBackgroundColor(spokenText);
+        } else {
+          alert("Invalid color. Please say one of: white, red, green, blue, black.");
+        }
+      } else if (field === "fontSize") {
+        const size = parseInt(spokenText, 10);
+        if (!isNaN(size) && size >= 10 && size <= 100) {
+          setFontSize(size);
+        } else {
+          alert("Invalid font size. Please say a number between 10 and 100.");
+        }
+      }
+      setListeningFor(null);
+    };
+
+    recognition.onerror = () => {
+      alert("Error recognizing speech. Please try again.");
+      setListeningFor(null);
+    };
+
+    recognition.start();
+  };
+
+  const handleGenerate = async () => {
+    if (!imageUrl) {
+      alert("No logo image to edit.");
+      return;
+    }
+
+    setIsGenerating(true);
+    setShowModal(true);
+
+    try {
+      const response = await fetch(imageUrl);
+      const logoBlob = await response.blob();
+
+      const formData = new FormData();
+      formData.append("logo", logoBlob, "logo.png");
+      formData.append("name", logoName);
+      formData.append("slogan", slogan);
+      formData.append("background", backgroundColor);
+      formData.append("name_font_size", fontSize);
+
+      const apiResponse = await fetch("http://127.0.0.1:5000/edit-logo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (apiResponse.ok) {
+        const editedBlob = await apiResponse.blob();
+        setGeneratedImageBlob(editedBlob);
+      } else {
+        const errorText = await apiResponse.text();
+        alert(`Failed to edit the logo: ${errorText}`);
+        setShowModal(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while editing the logo.");
+      setShowModal(false);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const downloadGeneratedImage = () => {
+    if (!generatedImageBlob) return;
+    const url = URL.createObjectURL(generatedImageBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "edited-logo.png";
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -37,22 +134,91 @@ const EditVoiceLogo = () => {
         <h2>Tell Us your commands...</h2>
         <div className="image-placeholder">
           {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt="Logo to Edit"
-              className="logo-image"
-            />
+            <img src={imageUrl} alt="Logo to Edit" className="logo-image" />
           ) : (
             <p>No logo image available. Please go back and generate one.</p>
           )}
         </div>
-        <div className="microphone-icon">
-          <FaMicrophone size={80} color="purple" />
+
+        <div className="voice-inputs">
+          <div className="voice-input-row">
+            <label>Logo Name:</label>
+            <input type="text" value={logoName} readOnly placeholder="Logo Name" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("logoName")}
+              disabled={listeningFor === "logoName"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
+
+          <div className="voice-input-row">
+            <label>Slogan:</label>
+            <input type="text" value={slogan} readOnly placeholder="Slogan" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("slogan")}
+              disabled={listeningFor === "slogan"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
+
+          <div className="voice-input-row">
+            <label>Background Color:</label>
+            <input type="text" value={backgroundColor} readOnly placeholder="Background Color" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("backgroundColor")}
+              disabled={listeningFor === "backgroundColor"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
+
+          <div className="voice-input-row">
+            <label>Font Size:</label>
+            <input type="text" value={fontSize} readOnly placeholder="Font Size" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("fontSize")}
+              disabled={listeningFor === "fontSize"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
         </div>
-        <button className="back-button" onClick={goBack}>
-          <FaArrowLeft /> Back
+
+        <button className="generate-button" onClick={handleGenerate} disabled={isGenerating}>
+          {isGenerating ? "Generating..." : "Generate"}
         </button>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <FaTimes className="close-icon" onClick={() => setShowModal(false)} />
+            {isGenerating ? (
+              <div className="spinner"></div>
+            ) : (
+              <>
+                {generatedImageBlob && (
+                  <img
+                    src={URL.createObjectURL(generatedImageBlob)}
+                    alt="Edited Logo"
+                    className="generated-logo-image"
+                  />
+                )}
+                <button onClick={downloadGeneratedImage} className="download-button">
+                  Download Edited Logo
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

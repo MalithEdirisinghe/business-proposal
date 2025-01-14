@@ -5,7 +5,7 @@ const SelectMethodLogo = () => {
   const navigate = useNavigate();
 
   const handleTextClick = () => {
-    navigate("/text"); // Navigate to the Text Input page
+    navigate("/text-logo"); // Navigate to the Text Input page
   };
 
   const handleUploadClick = () => {

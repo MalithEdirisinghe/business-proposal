@@ -14,6 +14,8 @@ import ProposalGeneration from './components/ProposalGeneration';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
 import UploadImage from './components/logo/UploadImage';
 import EditVoiceLogo from './components/logo/EditVoiceLogo';
+import EditTextLogo from './components/logo/EditTextLogo';
+import TextLogo from './components/logo/TextLogo';
 import proposal_img from './assets/proposal.png';
 import logo_creation from './assets/logo_creation.png';
 import web_img from './assets/web_for_business.png';
@@ -112,6 +114,8 @@ const App = () => {
         <Route path="/proposal-generation" element={<ProposalGeneration isAuthenticated={isAuthenticated} />} />
         <Route path="/upload-image" element={<UploadImage isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-voice-logo" element={<EditVoiceLogo isAuthenticated={isAuthenticated} />} />
+        <Route path="/text-logo" element={<TextLogo isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-text-logo" element={<EditTextLogo isAuthenticated={isAuthenticated} />} />
       </Routes>
       {/* Always display the footer on the home page */}
       {location.pathname === '/' && <Footer />}

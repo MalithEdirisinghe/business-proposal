@@ -92,24 +92,72 @@
     margin-top: 20px;
   }
   
-  .back-button {
-    margin-top: 30px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #003366;
+  .voice-input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .voice-input-row label {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .voice-input-row input {
+    flex: 2;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .microphone-button {
+    flex: 0;
+    background-color: #4caf50;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    transition: background-color 0.3s;
   }
   
-  .back-button:hover {
-    background-color: #0055aa;
+  .microphone-button:hover {
+    background-color: #45a049;
   }
   
-  .back-button svg {
-    margin-right: 10px;
+  .microphone-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  .download-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .download-button:hover {
+    background-color: #45a049;
+  }
+  
+  .download-button:active {
+    background-color: #3e8e41;
+  }
+  
+  .download-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
   
