@@ -7,6 +7,9 @@ import { useLocation } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import chat from '../assets/chat.png';
+import jsPDF from 'jspdf';
+import './NotoSansSinhala-normal';
+
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -21,7 +24,7 @@ const translations = {
     skipAndContinue: "Skip and Continue",
     addMissingDetails: "Add Missing Details",
   },
-  Sinhala: {
+  Sinhala: { 
     heading: "BizConnect Lanka",
     subHeading: "මගින් ඔබගේ ව්‍යාපාර යෝජනාවන් සාර්ථකව සහ පහසුවෙන් සකස් කරන්න.",
     instruction: "ඔබේ ව්‍යාපාර සංකල්පය සහිත ගොනුව ලිපියක් ටයිප් කරන්න හෝ upload කරන්න",
@@ -166,6 +169,36 @@ const TextRecord = () => {
     navigate("/proposal-generation"); // Navigate when skipping
   };
 
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF();
+    
+    // Configure Sinhala font
+    doc.setFont('NotoSansSinhala');
+    doc.setFontSize(12);
+    
+    // PDF configuration
+    const margin = 15;
+    const lineHeight = 7;
+    let y = margin;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Split text into array of Sinhala lines
+    const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
+    
+    // Add lines to PDF
+    splitText.forEach((line, index) => {
+      if (y > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      
+      doc.text(line, margin, y, { lang: 'si' });
+      y += lineHeight;
+    });
+
+    doc.save('business_proposal_si.pdf');
+  };
+
   return (
     <div className="text-record-container">
       <div className="left-panel">
@@ -213,6 +246,9 @@ const TextRecord = () => {
               style={{ display: "none" }}
               onChange={handleFileChange}
             />
+
+            <button onClick={handleGeneratePDF}>Generate PDF</button>
+
           </div>
         </div>
         {pdfName && (

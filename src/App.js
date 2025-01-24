@@ -12,6 +12,7 @@ import TextRecord from './components/TextRecord';
 import VoiceRecord from './components/VoiceRecord';
 import ProposalGeneration from './components/ProposalGeneration';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
+import SelectMethodWeb from './components/web/SelectMethodWeb';
 import UploadImage from './components/logo/UploadImage';
 import EditVoiceLogo from './components/logo/EditVoiceLogo';
 import EditTextLogo from './components/logo/EditTextLogo';
@@ -55,7 +56,7 @@ const App = () => {
   const handleLogout = () => {
     auth.signOut();
     setIsAuthenticated(false);
-    navigate('/'); // Redirect to home after logout
+    navigate('/');
   };
 
   return (
@@ -86,7 +87,7 @@ const App = () => {
                 description="Transform your ideas into investor-ready proposals with ease."
                 image={proposal_img}
                 buttonText="Try it now"
-                handleClick={handleBusinessProposalClick} // Pass the navigation function
+                handleClick={handleBusinessProposalClick}
               />
               <Section
                 title="Logo Creation"
@@ -116,6 +117,7 @@ const App = () => {
         <Route path="/edit-voice-logo" element={<EditVoiceLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/text-logo" element={<TextLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-text-logo" element={<EditTextLogo isAuthenticated={isAuthenticated} />} />
+        <Route path="/select-method-web" element={<SelectMethodWeb isAuthenticated={isAuthenticated} />} />
       </Routes>
       {/* Always display the footer on the home page */}
       {location.pathname === '/' && <Footer />}
