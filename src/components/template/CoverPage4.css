@@ -1,0 +1,114 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: "Arial", sans-serif;
+  }
+  
+  .cover-page4 {
+    width: 800px;
+    height: 1000px;
+    margin: 0 auto;
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  /* Header Section */
+  .cover-page4-header {
+    width: 100%;
+    text-align: right;
+    margin-top: 20px;
+  }
+  
+  .cover-page4-logo {
+    font-size: 18px;
+    font-weight: bold;
+    color: #a00000;
+    text-transform: uppercase;
+  }
+  
+  /* Title Section */
+  .cover-page4-title {
+    text-align: center;
+    margin-top: 80px;
+  }
+  
+  .cover-page4-main-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #a00000;
+    margin: 0;
+  }
+  
+  .cover-page4-year {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff0000;
+    margin: 10px 0;
+  }
+  
+  .cover-page4-company-name {
+    font-size: 18px;
+    color: #555;
+    margin-top: 10px;
+  }
+  
+  /* Prepared Info Section */
+  .cover-page4-info {
+    text-align: left;
+    margin: 100px 0;
+  }
+  
+  .cover-page4-prepared-by,
+  .cover-page4-prepared-for,
+  .cover-page4-date,
+  .cover-page4-address,
+  .cover-page4-email {
+    font-size: 16px;
+    color: #333333;
+    margin: 10px 0;
+  }
+  
+  .cover-page4-prepared-by strong,
+  .cover-page4-prepared-for strong,
+  .cover-page4-date strong,
+  .cover-page4-address strong,
+  .cover-page4-email strong {
+    font-weight: bold;
+    color: #a00000;
+  }
+  
+  /* Footer Section */
+  .cover-page4-footer {
+    font-size: 14px;
+    color: #a00000;
+    text-align: center;
+  }
+  
+  /* Decorative Elements */
+  .cover-page4-decorative-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background: #a00000;
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 70%);
+  }
+  
+  .cover-page4-decorative-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: #a00000;
+    clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+  }
+  

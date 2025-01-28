@@ -1,0 +1,131 @@
+.form-container {
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  .form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  input, textarea, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #007BFF;
+  }
+  
+  .file-name {
+    font-size: 14px;
+    color: #007BFF;
+    margin-top: 5px;
+  }
+  
+  .submit-button {
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background: #0056b3;
+  }
+  
+  .response-message {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #28a745;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 700px;
+    width: 90%;
+    text-align: left;
+    overflow-y: auto;
+    max-height: 80%;
+  }
+  .modal-content h2{
+    color: #000000;
+  }
+  .modal-text {
+    margin-top: 15px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+  
+  .section h3 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .section p {
+    color: #555;
+  }
+  
+  .close-modal-button {
+    margin-top: 15px;
+    background: #f44336;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .close-modal-button:hover {
+    background: #d32f2f;
+  }
+  

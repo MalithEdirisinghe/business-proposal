@@ -11,12 +11,23 @@ import LanguageSelect from './components/LanguageSelect';
 import TextRecord from './components/TextRecord';
 import VoiceRecord from './components/VoiceRecord';
 import ProposalGeneration from './components/ProposalGeneration';
+import ProposalForm  from './components/ProposalForm';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
 import SelectMethodWeb from './components/web/SelectMethodWeb';
 import UploadImage from './components/logo/UploadImage';
 import EditVoiceLogo from './components/logo/EditVoiceLogo';
 import EditTextLogo from './components/logo/EditTextLogo';
+import CoverTemplateGenerator from "./components/CoverTemplateGenerator";
 import TextLogo from './components/logo/TextLogo';
+import CoverPage1 from './components/template/CoverPage1';
+import CoverPage2 from './components/template/CoverPage2';
+import CoverPage3 from './components/template/CoverPage3';
+import CoverPage4 from './components/template/CoverPage4';
+import CoverPage5 from './components/template/CoverPage5';
+import CoverPage6 from './components/template/CoverPage6';
+import CoverPage7 from './components/template/CoverPage7';
+import CoverPage8 from './components/template/CoverPage8';
+import CoverPage9 from './components/template/CoverPage9';
 import proposal_img from './assets/proposal.png';
 import logo_creation from './assets/logo_creation.png';
 import web_img from './assets/web_for_business.png';
@@ -118,6 +129,17 @@ const App = () => {
         <Route path="/text-logo" element={<TextLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-text-logo" element={<EditTextLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/select-method-web" element={<SelectMethodWeb isAuthenticated={isAuthenticated} />} />
+        <Route path="/proposal-form" element={<ProposalForm isAuthenticated={isAuthenticated} />} />
+        <Route path="/cover-template-generator" element={<CoverTemplateGenerator  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover1" element={<CoverPage1  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover2" element={<CoverPage2  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover3" element={<CoverPage3  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover4" element={<CoverPage4  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover5" element={<CoverPage5  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover6" element={<CoverPage6  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover7" element={<CoverPage7  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover8" element={<CoverPage8  isAuthenticated={isAuthenticated} />} />
+        <Route path="/edit-cover9" element={<CoverPage9  isAuthenticated={isAuthenticated} />} />
       </Routes>
       {/* Always display the footer on the home page */}
       {location.pathname === '/' && <Footer />}

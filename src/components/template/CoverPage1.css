@@ -1,0 +1,226 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .cover-page {
+    width: 800px;
+    height: 1000px;
+    margin: 0 auto;
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    overflow: hidden;
+  }
+  
+  /* Logo Section */
+  .logo-section {
+    text-align: left;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    max-width: 50px;
+    margin-right: 10px;
+  }
+  
+  .company-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Title Section */
+  .title-section1 {
+    text-align: center;
+    margin-top: 100px;
+  }
+  
+  .project-title1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .prepared-by {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #555;
+  }
+  
+  .author-name {
+    font-weight: bold;
+    color: #000;
+  }
+  
+  /* Decorative Elements */
+  .decorative-elements {
+    position: absolute;
+    bottom: 200px;
+    left: 50px;
+    right: 50px;
+  }
+  
+  .blue-gradient {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to right, #007bff, #00aaff);
+    transform: skewX(-20deg);
+    margin-top: 50px;
+  }
+  
+  .blue-gradient1 {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to right, #007bff, #00aaff);
+    transform: skewX(20deg);
+    margin-top: 50px;
+  }
+  
+  .dot-pattern {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #007bff 20%, transparent 20%);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    margin-left: 20px;
+    position: absolute;
+    top: -50px;
+  }
+  .dot-pattern1 {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #007bff 20%, transparent 20%);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    right: 30px;
+    position: absolute;
+    top: 120px;
+  }
+  
+  /* Contact Info */
+  .contact-info {
+    text-align: center;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  /* General Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.save-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: #0056b3;
+}
+
+/* Edit Button Styles */
+.edit-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.edit-button:hover {
+  background: #0056b3;
+}
+
+/* Buttons Section */
+.buttons-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.edit-button,
+.use-template-button {
+  background-color: #007bff; /* Primary blue color */
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-button:hover,
+.use-template-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slightly increase button size on hover */
+}
+
+.edit-button:active,
+.use-template-button:active {
+  background-color: #003f7f; /* Even darker blue on active state */
+  transform: scale(1); /* Reset size on click */
+}
+
+.edit-button {
+  background-color: #28a745; /* Green color for Edit Cover */
+}
+
+.edit-button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.edit-button:active {
+  background-color: #1e7e34; /* Even darker green on active state */
+}

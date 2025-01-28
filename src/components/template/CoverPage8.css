@@ -1,0 +1,98 @@
+.cover-page8-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #f0f0f5;
+  }
+  
+  /* Cover Page Design */
+  .cover-page8 {
+    width: 800px;
+    height: 1000px;
+    background: linear-gradient(to bottom, #ffffff, #f3f3f3);
+    border: 1px solid #ddd;
+    padding: 50px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  /* Background Diagonal */
+  .cover-page8-diagonal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to right, #1a2a41, #29467a);
+    clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 0% 100%);
+    z-index: 1;
+  }
+  
+  /* Background Overlay */
+  .cover-page8-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 2;
+  }
+  
+  /* Title Section */
+  .cover-page8-title {
+    position: relative;
+    z-index: 3;
+    margin-top: 220px;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .cover-page8-report-title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #1a2a41;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .cover-page8-company-name {
+    font-size: 24px;
+    color: #aaa9a9;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  
+  /* Details Section */
+  .cover-page8-details {
+    position: relative;
+    z-index: 3;
+    margin-top: 200px;
+    text-align: left;
+    padding: 20px;
+    font-size: 18px;
+    color: #1a2a41;
+    background: rgba(119, 110, 110, 0.452);
+    border-radius: 10px;
+    display: inline-block;
+  }
+  
+  /* Footer */
+  .cover-page8-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: #1a2a41;
+    font-weight: bold;
+    background: linear-gradient(to right, #1a2a41, #29467a);
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+  }

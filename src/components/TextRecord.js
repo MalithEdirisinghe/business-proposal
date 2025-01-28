@@ -24,7 +24,7 @@ const translations = {
     skipAndContinue: "Skip and Continue",
     addMissingDetails: "Add Missing Details",
   },
-  Sinhala: { 
+  Sinhala: {
     heading: "BizConnect Lanka",
     subHeading: "මගින් ඔබගේ ව්‍යාපාර යෝජනාවන් සාර්ථකව සහ පහසුවෙන් සකස් කරන්න.",
     instruction: "ඔබේ ව්‍යාපාර සංකල්පය සහිත ගොනුව ලිපියක් ටයිප් කරන්න හෝ upload කරන්න",
@@ -123,37 +123,62 @@ const TextRecord = () => {
   };
 
   const handleUploadToML = async () => {
-    try {
-      const payload = pdfData
-        ? { pdfName, pdfData: Array.from(pdfData) } // Simulate API payload for PDF
-        : { text }; // Payload for typed text
+    if (!text.trim()) {
+      alert("Please enter some text before uploading to ML.");
+      return;
+    }
 
-      // Simulate API call to mock ML endpoint
-      const response = await fetch("https://dummyjson.com/test", {
+    try {
+      // Step 1: Convert text to PDF
+      const doc = new jsPDF();
+      doc.setFont("NotoSansSinhala");
+      doc.setFontSize(12);
+      const margin = 15;
+      const lineHeight = 7;
+      let y = margin;
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
+      splitText.forEach((line) => {
+        if (y > doc.internal.pageSize.getHeight() - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += lineHeight;
+      });
+
+      const pdfBlob = doc.output("blob"); // Generate PDF as a Blob
+
+      // Step 2: Create FormData object
+      const formData = new FormData();
+      formData.append("file", new File([pdfBlob], "converted_text.pdf", { type: "application/pdf" }));
+
+      // Step 3: Call API to check missing information
+      const response = await fetch("http://127.0.0.1:8000/check-missing-topics/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!response.ok) {
         const errorDetails = await response.text();
-        throw new Error(`Cloud Function Error: ${errorDetails}`);
+        throw new Error(`API Error: ${errorDetails}`);
       }
 
       const result = await response.json();
-      console.log("Response:", result);
+      console.log("API Response:", result);
 
-      // Check if "missing info" is present
-      const missingInfoStatus = Math.random() > 0.5 ? "Yes" : "No"; // Simulated response
-      setMissingInfo(missingInfoStatus);
-      setUploadStatus(`Upload successful! Missing Info: ${missingInfoStatus}`);
-
-      if (missingInfoStatus === "No") {
-        navigate("/proposal-generation"); // Navigate to ProposalGeneration.js
+      // Step 4: Handle response for missing information
+      if (result.missing_info === "yes") {
+        // If missing info is present, update the state and show modal
+        alert(`Missing Topics: ${result.missing_topics.join(", ")}`);
+        setMissingInfo({ status: "yes", topics: result.missing_topics }); // Track missing info state with topics
+      } else {
+        // If no missing info, proceed with the next step
+        setMissingInfo({ status: "no", topics: [] });
+        alert("No missing information found. Proceeding...");
+        navigate("/proposal-generation"); // Navigate to the next page
       }
-
     } catch (error) {
       console.error("Error uploading to ML:", error);
       setUploadStatus("Upload failed. Please try again.");
@@ -161,37 +186,62 @@ const TextRecord = () => {
     }
   };
 
+
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
 
   const handleSkipAndContinue = () => {
-    navigate("/proposal-generation"); // Navigate when skipping
+    // Create a File object from the generated PDF Blob
+    const doc = new jsPDF();
+    doc.setFont("NotoSansSinhala");
+    doc.setFontSize(12);
+    const margin = 15;
+    const lineHeight = 7;
+    let y = margin;
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
+    splitText.forEach((line) => {
+      if (y > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
+
+    const pdfBlob = doc.output("blob"); // Generate PDF as Blob
+    const generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
+
+    // Navigate to ProposalForm with the file in state
+    navigate("/proposal-form", { state: { generatedPdfFile } });
   };
+
 
   const handleGeneratePDF = () => {
     const doc = new jsPDF();
-    
+
     // Configure Sinhala font
     doc.setFont('NotoSansSinhala');
     doc.setFontSize(12);
-    
+
     // PDF configuration
     const margin = 15;
     const lineHeight = 7;
     let y = margin;
     const pageWidth = doc.internal.pageSize.getWidth();
-    
+
     // Split text into array of Sinhala lines
     const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
-    
+
     // Add lines to PDF
-    splitText.forEach((line, index) => {
+    splitText.forEach((line) => {
       if (y > doc.internal.pageSize.getHeight() - margin) {
         doc.addPage();
         y = margin;
       }
-      
+
       doc.text(line, margin, y, { lang: 'si' });
       y += lineHeight;
     });
@@ -263,7 +313,7 @@ const TextRecord = () => {
         {uploadStatus && <p className="upload-status">{uploadStatus}</p>}
       </div>
 
-      {missingInfo === "Yes" && (
+      {missingInfo?.status === "yes" && (
         <div className="missing-info-container">
           <div className="missing-info-card">
             <div className="missing-info-header">
@@ -281,15 +331,9 @@ const TextRecord = () => {
                   කාර්යක්ෂමතාව වැඩි දියුණු කිරීමට උපකාරී විය හැක.
                 </p>
                 <ul>
-                  <li>
-                    <strong>මගහැර ඉදිරියට යන්න</strong> වඩාත් අඩු විස්තර ලබා නොදී
-                    විකල්පයක් තෝරාගෙන යෝජනාව පවත්වාගෙන යාමට ඔබට තේරිය හැක.
-                  </li>
-                  <li>
-                    <strong>අඩු විස්තර එකතු කරන්න</strong> විකල්පය තෝරාගනිමින්, ඔබේ
-                    යෝජනාව කාර්යක්ෂම සහ වඩාත් බලපෑම්කාරී වන පරිදි අත්‍යවශ්‍ය විස්තර
-                    එක් කළ හැක.
-                  </li>
+                  {missingInfo.topics.map((topic, index) => (
+                    <li key={index}>{topic}</li>
+                  ))}
                 </ul>
               </>
             ) : (
@@ -299,16 +343,9 @@ const TextRecord = () => {
                   effectiveness of your business proposal.
                 </p>
                 <ul>
-                  <li>
-                    You can choose to <strong>Skip and Continue</strong> without providing
-                    the missing information and proceed with the proposal in its current
-                    form.
-                  </li>
-                  <li>
-                    Or, you can select <strong>Add Missing Details</strong> to include the
-                    necessary information, ensuring your proposal is more comprehensive
-                    and impactful.
-                  </li>
+                  {missingInfo.topics.map((topic, index) => (
+                    <li key={index}>{topic}</li>
+                  ))}
                 </ul>
               </>
             )}

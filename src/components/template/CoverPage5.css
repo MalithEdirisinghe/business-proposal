@@ -1,0 +1,77 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: "Arial", sans-serif;
+  }
+  
+  .cover-page5 {
+    width: 800px;
+    height: 1000px;
+    margin: 0 auto;
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* Header Section */
+  .cover-page5-header {
+    text-align: center;
+    margin-top: 110px;
+  }
+  
+  .cover-page5-main-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #000;
+    margin: 1;
+  }
+  
+  .cover-page5-subtitle {
+    font-size: 24px;
+    color: #a00000;
+    margin-top: 10px;
+  }
+  
+  /* Details Section */
+  .cover-page5-details {
+    margin-top: 50px;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.8;
+    text-align: left;
+  }
+  
+  /* Footer Section */
+  .cover-page5-footer {
+    font-size: 16px;
+    color: #000;
+    text-align: right;
+    margin-bottom: 50px;
+  }
+  
+  /* Decorative Elements */
+  .cover-page5-decorative-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background: #a00000;
+    clip-path: polygon(0 0, 50% 100%, 0 100%);
+  }
+  
+  .cover-page5-decorative-bottom {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 150px;
+    background: #000;
+    clip-path: polygon(100% 0, 50% 100%, 100% 100%);
+  }
+  
