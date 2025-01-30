@@ -9,6 +9,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import chat from '../assets/chat.png';
 import jsPDF from 'jspdf';
 import './NotoSansSinhala-normal';
+import { FaSpinner } from "react-icons/fa";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -23,6 +24,24 @@ const translations = {
     missingInfoHeading: "Some important details are missing.",
     skipAndContinue: "Skip and Continue",
     addMissingDetails: "Add Missing Details",
+    missingInfo: {
+      "Company Overview": "Company Overview",
+      "Mission and Vision Statement": "Mission and Vision Statement",
+      "Executive Summary": "Executive Summary",
+      "Owners and Partnerships": "Owners and Partnerships",
+      "Industry Overview and Trends": "Industry Overview and Trends",
+      "Competition": "Competition",
+      "Problem Statement": "Problem Statement",
+      "Marketing Plan": "Marketing Plan",
+      "Proposed Solution": "Proposed Solution",
+      "Market Analysis": "Market Analysis",
+      "Sustainable Practices": "Sustainable Practices",
+      "Implementation Timeline": "Implementation Timeline",
+      "Staff Names": "Staff Names",
+      "Financial Objectives": "Financial Objectives",
+      "Exit Strategy": "Exit Strategy",
+      "Conclusion": "Conclusion",
+    }
   },
   Sinhala: {
     heading: "BizConnect Lanka",
@@ -33,7 +52,25 @@ const translations = {
     missingInfoHeading: "වැදගත් විස්තර අඩුයි.",
     skipAndContinue: "මගහැර ඉදිරියට යන්න",
     addMissingDetails: "අඩු විස්තර එකතු කරන්න",
-  },
+    missingInfo: {
+      "Company Overview": "සමාගම් සාරාංශය",
+      "Mission and Vision Statement": "ධාමික සහ දැක්ම පණිවිඩය",
+      "Executive Summary": "ක්‍රියාදාම සාරාංශය",
+      "Owners and Partnerships": "අයිතිකරුවන් සහ හවුල්කාරිත්වයන්",
+      "Industry Overview and Trends": "කර්මාන්ත සාරාංශය සහ ප්‍රවණතා",
+      "Competition": "මෙහෙයුම්",
+      "Problem Statement": "සමස්ථානය පණිවිඩය",
+      "Marketing Plan": "ප්‍රචාරණ සැලැස්ම",
+      "Proposed Solution": "පෙරළිකාරක විසඳුම",
+      "Market Analysis": "වෙළඳපොළ විශ්ලේෂණය",
+      "Sustainable Practices": "සස්ථාවන් සහ ප්‍රතිවෙනස් මාර්ග",
+      "Implementation Timeline": "ක්‍රියාත්මක කිරීමේ කාලය",
+      "Staff Names": "කාර්ය මණ්ඩලයේ නාමයන්",
+      "Financial Objectives": "මුදල් ආරක්ෂණ ආරම්භය",
+      "Exit Strategy": "ප්‍රතික්‍රියා අවසන් ක්‍රම",
+      "Conclusion": "නිගමනය"
+    }
+  }
 };
 
 const TextRecord = () => {
@@ -48,8 +85,9 @@ const TextRecord = () => {
   const [pdfName, setPdfName] = useState("");
   const [numPages, setNumPages] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
-  const [missingInfo, setMissingInfo] = useState(null); // Track if "Missing info" is present
+  const [missingInfo, setMissingInfo] = useState({ status: "no", topics: [] });
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchSuggestions = async (input) => {
     if (!input || language !== "Sinhala") {
@@ -129,6 +167,7 @@ const TextRecord = () => {
     }
 
     try {
+      setLoading(true);
       // Step 1: Convert text to PDF
       const doc = new jsPDF();
       doc.setFont("NotoSansSinhala");
@@ -172,7 +211,11 @@ const TextRecord = () => {
       if (result.missing_info === "yes") {
         // If missing info is present, update the state and show modal
         alert(`Missing Topics: ${result.missing_topics.join(", ")}`);
-        setMissingInfo({ status: "yes", topics: result.missing_topics }); // Track missing info state with topics
+
+        // Apply translations for Sinhala
+        const translatedTopics = result.missing_topics.map(topic => content.missingInfo[topic] || topic);
+
+        setMissingInfo({ status: "yes", topics: translatedTopics }); // Track missing info state with topics
       } else {
         // If no missing info, proceed with the next step
         setMissingInfo({ status: "no", topics: [] });
@@ -183,9 +226,10 @@ const TextRecord = () => {
       console.error("Error uploading to ML:", error);
       setUploadStatus("Upload failed. Please try again.");
       alert("Upload failed. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
-
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -307,8 +351,8 @@ const TextRecord = () => {
             <span>{pdfName}</span>
           </div>
         )}
-        <button className="upload-to-ml-button" onClick={handleUploadToML}>
-          {content.uploadToML}
+        <button className="upload-to-ml-button" onClick={handleUploadToML} disabled={loading}>
+          {loading ? <FaSpinner className="spinner" /> : content.uploadToML}
         </button>
         {uploadStatus && <p className="upload-status">{uploadStatus}</p>}
       </div>
@@ -331,7 +375,7 @@ const TextRecord = () => {
                   කාර්යක්ෂමතාව වැඩි දියුණු කිරීමට උපකාරී විය හැක.
                 </p>
                 <ul>
-                  {missingInfo.topics.map((topic, index) => (
+                  {missingInfo?.topics?.length > 0 && missingInfo.topics.map((topic, index) => (
                     <li key={index}>{topic}</li>
                   ))}
                 </ul>
@@ -343,7 +387,7 @@ const TextRecord = () => {
                   effectiveness of your business proposal.
                 </p>
                 <ul>
-                  {missingInfo.topics.map((topic, index) => (
+                  {missingInfo?.topics?.length > 0 && missingInfo.topics.map((topic, index) => (
                     <li key={index}>{topic}</li>
                   ))}
                 </ul>
@@ -358,7 +402,35 @@ const TextRecord = () => {
               </button>
               <button
                 className="add-details-button"
-                onClick={() => alert("Redirecting to Add Missing Details...")}
+                onClick={() => {
+                  const doc = new jsPDF();
+                  doc.setFont("NotoSansSinhala");
+                  doc.setFontSize(12);
+                  const margin = 15;
+                  const lineHeight = 7;
+                  let y = margin;
+                  const pageWidth = doc.internal.pageSize.getWidth();
+
+                  const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
+                  splitText.forEach((line) => {
+                    if (y > doc.internal.pageSize.getHeight() - margin) {
+                      doc.addPage();
+                      y = margin;
+                    }
+                    doc.text(line, margin, y);
+                    y += lineHeight;
+                  });
+
+                  // Convert generated PDF to Blob
+                  const pdfBlob = doc.output("blob");
+                  const generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
+
+                  // ✅ Check if PDF is successfully created
+                  console.log("Generated PDF File:", generatedPdfFile);
+
+                  // Navigate to MissingDetails.js with missingInfo and PDF file
+                  navigate("/missing-details", { state: { missingInfo, generatedPdfFile, language } });
+                }}
               >
                 {content.addMissingDetails}
               </button>

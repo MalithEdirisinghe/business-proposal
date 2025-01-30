@@ -12,6 +12,7 @@ import TextRecord from './components/TextRecord';
 import VoiceRecord from './components/VoiceRecord';
 import ProposalGeneration from './components/ProposalGeneration';
 import ProposalForm  from './components/ProposalForm';
+import MissingDetails  from './components/MissingDetails';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
 import SelectMethodWeb from './components/web/SelectMethodWeb';
 import UploadImage from './components/logo/UploadImage';
@@ -131,6 +132,7 @@ const App = () => {
         <Route path="/select-method-web" element={<SelectMethodWeb isAuthenticated={isAuthenticated} />} />
         <Route path="/proposal-form" element={<ProposalForm isAuthenticated={isAuthenticated} />} />
         <Route path="/cover-template-generator" element={<CoverTemplateGenerator  isAuthenticated={isAuthenticated} />} />
+        <Route path="/missing-details" element={<MissingDetails  isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-cover1" element={<CoverPage1  isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-cover2" element={<CoverPage2  isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-cover3" element={<CoverPage3  isAuthenticated={isAuthenticated} />} />

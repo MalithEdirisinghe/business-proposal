@@ -22,12 +22,12 @@ const ProposalForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!businessName || !businessDomain || !userInstructions) {
       alert("Please fill in all required fields.");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("file", generatedPdfFile); // Use the passed generated file
     formData.append("business_name", businessName);
@@ -35,27 +35,27 @@ const ProposalForm = () => {
     formData.append("is_existing", isExisting);
     formData.append("user_instructions", userInstructions);
     formData.append("selected_template", selectedTemplate);
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/generate-proposal/", {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       // Navigate to CoverTemplateGenerator.js with the response data
       navigate("/cover-template-generator", { state: { headings: data.headings } });
-  
+
       setResponseMessage("Proposal generated successfully!");
     } catch (error) {
       console.error("Error:", error);
       setResponseMessage("Failed to generate the proposal. Please try again.");
     }
-  };  
+  };
 
   return (
     <div className="form-container">

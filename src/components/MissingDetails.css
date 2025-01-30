@@ -1,0 +1,220 @@
+.missing-details-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #003366;
+    padding: 15px;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.header-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* Missing Information Section */
+.missing-info-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.missing-topics {
+    text-align: left;
+}
+
+/* Topic Item */
+.topic-item {
+    margin-bottom: 10px;
+}
+
+.topic-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 10px;
+    background: #42404085;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.topic-content {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.topic-input {
+    width: 100%;
+    height: 50px;
+    margin-top: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Submit Button */
+.submit-button {
+    margin-top: 5px;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Submission Status */
+.submitted-text {
+    color: #28a745;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Bottom Section */
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Text Input & File Upload Sections */
+.text-input-section, .file-upload-section {
+    width: 48%;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.text-input-section {
+    background: #003366;
+    color: white;
+}
+
+.file-upload-section {
+    background: #fdbb2d;
+}
+
+/* Text Area */
+.text-area1 {
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* File Upload */
+.file-upload-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border: 2px dashed #000;
+    padding: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.file-upload-box input {
+    display: none;
+}
+
+/* Buttons */
+.buttons-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.view-details-button {
+    background: #fdbb2d;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.back-button {
+    background: #003366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.continue-button {
+    background: #ffcc00;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.topic-content {
+    margin-top: 10px;
+  }
+  
+  .submit-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+  
+  .submit-button:hover {
+    background: #218838;
+  }
+  
+  .submitted-responses {
+    margin-top: 10px;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .submitted-responses ul {
+    padding-left: 20px;
+  }
+  
+  .submitted-responses li {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 3px;
+  }
+  .complete-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .complete-button:hover {
+    background: #218838;
+  }
+    
