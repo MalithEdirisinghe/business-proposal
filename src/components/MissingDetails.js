@@ -4,9 +4,10 @@ import "./MissingDetails.css";
 import chat from '../assets/chat.png';
 import { Document, Page, pdfjs } from "react-pdf";  // Import Document and Page
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import Modal from './Modal'; 
+import Modal from './Modal';
 import { jsPDF } from "jspdf";
-import "./NotoSansSinhala-normal"; 
+import "./NotoSansSinhala-normal";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 // Set PDF.js worker source locally
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
@@ -35,9 +36,9 @@ const translations = {
 const MissingDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { missingInfo, generatedPdfFile, language } = location.state || { 
-    missingInfo: { topics: [] }, 
-    generatedPdfFile: null 
+  const { missingInfo, generatedPdfFile, language } = location.state || {
+    missingInfo: { topics: [] },
+    generatedPdfFile: null
   };
 
   // Get translations for the selected language
@@ -139,7 +140,7 @@ const MissingDetails = () => {
 
     alert(`Details for "${topic}" submitted successfully!`);
   };
-
+  
   const handleComplete = async () => {
     if (!generatedPdfFile) {
       alert("No base PDF found.");
@@ -149,29 +150,31 @@ const MissingDetails = () => {
     try {
       const reader = new FileReader();
       reader.readAsArrayBuffer(generatedPdfFile);
-      
+
       reader.onload = async function (event) {
         const existingPdfBytes = event.target.result;
 
-        const pdfDoc = new jsPDF();
-
-        // Add the custom Sinhala font
-        pdfDoc.setFont("NotoSansSinhala"); // Now you can set this font for the text
+        // Load existing PDF
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const pages = pdfDoc.getPages();
+        const { width, height } = pages[0].getSize();
 
         // Add a new page for missing details
-        const newPage = pdfDoc.addPage([600, 800]);
+        const newPage = pdfDoc.addPage([width, height]);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        newPage.setFont(font);
         newPage.setFontSize(16);
-        newPage.text("Added Missing Details", 50, 750);
+        newPage.drawText("Added Missing Details", { x: 50, y: height - 50, color: rgb(0, 0, 0) });
 
-        let y = 730;
+        let y = height - 80;
         for (const topic in formData) {
           if (formData[topic].length > 0) {
             newPage.setFontSize(14);
-            newPage.text(`${topic}:`, 50, y);
+            newPage.drawText(`${topic}:`, { x: 50, y, color: rgb(0.1, 0.1, 0.1) });
             y -= 20;
 
             formData[topic].forEach((entry) => {
-              newPage.text(`- ${entry}`, 70, y);
+              newPage.drawText(`- ${entry}`, { x: 70, y, color: rgb(0.2, 0.2, 0.2) });
               y -= 20;
             });
 
@@ -179,13 +182,25 @@ const MissingDetails = () => {
           }
         }
 
+        // Save updated PDF
         const updatedPdfBytes = await pdfDoc.save();
         const updatedPdfBlob = new Blob([updatedPdfBytes], { type: "application/pdf" });
         const updatedPdfFile = new File([updatedPdfBlob], "Updated_Business_Proposal.pdf", { type: "application/pdf" });
 
-        navigate("/proposal-form", { state: { generatedPdfFile: updatedPdfFile } });
+        // **Download the Updated PDF**
+        // const url = URL.createObjectURL(updatedPdfBlob);
+        // const a = document.createElement("a");
+        // a.href = url;
+        // a.download = "Updated_Business_Proposal.pdf";
+        // document.body.appendChild(a);
+        // a.click();
+        // document.body.removeChild(a);
+        // URL.revokeObjectURL(url);
 
-        alert("Updated proposal PDF has been passed to ProposalForm.");
+        // **Navigate After Download**
+        setTimeout(() => {
+          navigate("/proposal-form", { state: { generatedPdfFile: updatedPdfFile } });
+        }, 1000); // Wait 1 second before navigating
       };
     } catch (error) {
       console.error("Error updating PDF:", error);
@@ -227,7 +242,7 @@ const MissingDetails = () => {
                       name={topic}
                       value={inputValues[topic]}
                       onChange={(e) => handleInputChange(e, topic)}
-                      onKeyDown={(e) => handleKeyDown(e, topic)} 
+                      onKeyDown={(e) => handleKeyDown(e, topic)}
                       placeholder={content.placeholder.replace("{topic}", topic)}
                     />
                     <button className="submit-button" onClick={() => handleSubmit(topic)}>

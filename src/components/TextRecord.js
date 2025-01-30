@@ -421,13 +421,14 @@ const TextRecord = () => {
                     y += lineHeight;
                   });
 
+                  doc.save("save.pdf");
                   // Convert generated PDF to Blob
                   const pdfBlob = doc.output("blob");
                   const generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
 
                   // ✅ Check if PDF is successfully created
                   console.log("Generated PDF File:", generatedPdfFile);
-
+                  console.log("Missing info 2:", missingInfo);
                   // Navigate to MissingDetails.js with missingInfo and PDF file
                   navigate("/missing-details", { state: { missingInfo, generatedPdfFile, language } });
                 }}

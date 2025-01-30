@@ -16,6 +16,7 @@
     "html2canvas": "^1.4.1",
     "i18next": "^24.2.0",
     "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "mammoth": "^1.9.0",
     "node-fetch": "^3.3.2",
     "or": "^0.2.0",
