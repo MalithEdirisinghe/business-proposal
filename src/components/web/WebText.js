@@ -92,26 +92,41 @@ const WebText = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Check if required fields are filled
+        const requiredFields = [
+            "description",
+            "website_name",
+            "home_description",
+            "home_paragraphs",
+            "about_description"
+        ];
+    
+        for (let field of requiredFields) {
+            if (!formData[field] || formData[field].trim() === "") {
+                alert(`Please fill in the ${field.replace("_", " ")} field.`);
+                return;  // Stop the form submission
+            }
+        }
+    
         // Formatting services before sending to API
         const formattedServices = formData.services.map(service => ({
             name: service.name.trim(),
             description: service.description.trim(),
             image: service.image.trim()
         }));
-
+    
         const updatedFormData = { 
             ...formData, 
             services: formattedServices 
         };
-
+    
         // Log the updated form data (for testing purposes)
         console.log("Generated JSON:", JSON.stringify(updatedFormData, null, 2));
-
+    
         // Optional: Alert the user that the data has been logged
         alert("Form data logged to console!");
-
-        // Uncomment the code below if you want to send the data to the API
+    
         const endpoint = templates[selectedTemplate].endpoint;
         try {
             const response = await fetch(endpoint, {
@@ -119,14 +134,54 @@ const WebText = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedFormData)
             });
-            const result = await response.json();
-            console.log("Response:", result);
-            alert("Data submitted successfully!");
+    
+            // Check if the response is OK
+            if (response.ok) {
+                const result = await response.json();
+    
+                // Check if the response contains base64 encoded file
+                if (result.zip_file_base64) {
+                    // Decode the base64 string to binary data
+                    const byteCharacters = atob(result.zip_file_base64);  // Decode base64 to a string of binary characters
+                    const byteArrays = [];
+    
+                    // Convert the string into byte arrays
+                    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                        const slice = byteCharacters.slice(offset, offset + 512);
+                        const byteNumbers = new Array(slice.length);
+    
+                        for (let i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);  // Convert character to byte number
+                        }
+    
+                        const byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
+                    }
+    
+                    // Create a Blob object from the byte arrays
+                    const blob = new Blob(byteArrays, { type: 'application/zip' });
+    
+                    // Create a URL for the Blob and trigger the download
+                    const zipFileUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = zipFileUrl;
+                    a.download = 'generated_files.zip';  // The filename for the downloaded file
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+    
+                    // alert("Data submitted successfully and file is downloading!");
+                } else {
+                    alert("No base64 data found in the response.");
+                }
+            } else {
+                alert("Submission failed.");
+            }
         } catch (error) {
             console.error("Error:", error);
             alert("Submission failed.");
         }
-    };
+    };    
 
     return (
         <div className="container">

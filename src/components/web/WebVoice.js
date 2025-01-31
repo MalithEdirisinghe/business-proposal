@@ -81,65 +81,12 @@
 //         });
 //     };
 
-//     // Start MediaRecorder to capture voice input
-//     const startRecording = () => {
-//         chunksRef.current = []; // Clear previous audio chunks
-
-//         navigator.mediaDevices
-//             .getUserMedia({ audio: true })
-//             .then((stream) => {
-//                 mediaRecorder.current = new MediaRecorder(stream);
-
-//                 mediaRecorder.current.ondataavailable = (event) => {
-//                     if (event.data.size > 0) {
-//                         chunksRef.current.push(event.data);
-//                     }
-//                 };
-
-//                 mediaRecorder.current.onstop = async () => {
-//                     const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
-//                     try {
-//                         await uploadAudioToCloudStorage(audioBlob);
-//                     } catch (error) {
-//                         console.error("Error processing audio:", error);
-//                         alert("Error processing audio. Please try again.");
-//                     }
-//                 };
-
-//                 mediaRecorder.current.start();
-//                 setIsListening(true);
-//             })
-//             .catch((err) => {
-//                 console.error("Error accessing microphone:", err);
-//                 alert("Please grant microphone permissions.");
-//             });
-//     };
-
-//     // Stop MediaRecorder manually and create the audio blob
-//     const stopRecording = () => {
-//         if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
-//             mediaRecorder.current.stop();
-
-//             // Stop all tracks in the stream
-//             if (mediaRecorder.current.stream) {
-//                 mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
-//             }
-//         }
-//         setIsListening(false);
-//     };
-
-//     // Upload audio to Google Cloud Storage
-//     const uploadAudioToCloudStorage = async (audioBlob) => {
-//         if (!audioBlob) {
-//             alert("No audio recorded. Please record audio first.");
-//             return;
-//         }
-
-//         setIsLoading(true);
-
+//     const processAudio = async (audioBlob) => {
 //         try {
+//             setIsLoading(true);
 //             const base64Audio = await blobToBase64(audioBlob);
-
+            
+//             // Upload to cloud storage
 //             const cloudFunctionResponse = await fetch('https://us-central1-bizconnect-446515.cloudfunctions.net/function-1', {
 //                 method: 'POST',
 //                 headers: {
@@ -149,24 +96,14 @@
 //             });
 
 //             if (!cloudFunctionResponse.ok) {
-//                 const errorDetails = await cloudFunctionResponse.text();
-//                 throw new Error(`Cloud Function Error: ${errorDetails}`);
+//                 throw new Error(`Cloud Function Error: ${await cloudFunctionResponse.text()}`);
 //             }
 
+//             // Wait for a short time to ensure the file is processed
+//             await new Promise(resolve => setTimeout(resolve, 1000));
+
+//             // Get transcription
 //             const cloudStorageUri = 'gs://bizconnect_lanka1/converted-audios/output.flac';
-//             await transcribeAudioWithGoogleSpeechToText(cloudStorageUri);
-
-//         } catch (error) {
-//             console.error("Error:", error);
-//             alert(`Error: ${error.message}`);
-//         } finally {
-//             setIsLoading(false);
-//         }
-//     };
-
-//     // Call Google Speech-to-Text API
-//     const transcribeAudioWithGoogleSpeechToText = async (cloudStorageUri) => {
-//         try {
 //             const googleResponse = await fetch(
 //                 'https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyACXDLKVVG-LoFcZgnjllRBYCiDfCWNHzo',
 //                 {
@@ -188,32 +125,87 @@
 //             );
 
 //             const googleData = await googleResponse.json();
-
+            
 //             if (!googleResponse.ok) {
-//                 throw new Error(`Google Speech-to-Text Error: ${JSON.stringify(googleData)}`);
+//                 throw new Error(`Speech-to-Text Error: ${JSON.stringify(googleData)}`);
 //             }
 
-//             const transcript = googleData.results?.[0]?.alternatives?.[0]?.transcript || 'Could not transcribe audio.';
-//             if (editableField) {
-//                 setFormData(prev => ({ ...prev, [editableField]: transcript }));
+//             const transcript = googleData.results?.[0]?.alternatives?.[0]?.transcript;
+            
+//             if (!transcript) {
+//                 throw new Error('No transcript received from Speech-to-Text service');
 //             }
 
-//         } catch (error) {
-//             console.error("Error processing audio with Google Speech-to-Text:", error);
-//             alert(`Error: ${error.message}`);
+//             return transcript;
+//         } finally {
+//             setIsLoading(false);
 //         }
 //     };
 
-//     // Toggle the listening status and trigger recording
+
+//     // Start MediaRecorder to capture voice input
+//     const startRecording = async () => {
+//         try {
+//             chunksRef.current = [];
+//             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+//             mediaRecorder.current = new MediaRecorder(stream);
+            
+//             mediaRecorder.current.ondataavailable = (event) => {
+//                 if (event.data.size > 0) {
+//                     chunksRef.current.push(event.data);
+//                 }
+//             };
+
+//             mediaRecorder.current.onstop = async () => {
+//                 try {
+//                     const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
+//                     const transcript = await processAudio(audioBlob);
+                    
+//                     if (editableField && transcript) {
+//                         setFormData(prev => ({
+//                             ...prev,
+//                             [editableField]: transcript
+//                         }));
+//                     }
+//                 } catch (error) {
+//                     console.error("Error processing audio:", error);
+//                     // Don't show alert for network errors, as they might be temporary
+//                     if (!error.message.includes('Network Error')) {
+//                         alert(`Error processing audio: ${error.message}`);
+//                     }
+//                 }
+//             };
+
+//             mediaRecorder.current.start();
+//             setIsListening(true);
+//         } catch (err) {
+//             console.error("Error accessing microphone:", err);
+//             alert("Please grant microphone permissions.");
+//             setIsListening(false);
+//         }
+//     };
+
+//     const stopRecording = () => {
+//         if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
+//             mediaRecorder.current.stop();
+            
+//             if (mediaRecorder.current.stream) {
+//                 mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+//             }
+//         }
+//         setIsListening(false);
+//     };
+
 //     const toggleListening = (field) => {
-//         setEditableField(field); // Set the field to be edited
 //         if (isListening) {
-//             stopRecording(); // Stop recording when the stop button is clicked
+//             stopRecording();
 //         } else {
-//             startRecording(); // Start recording when the mic button is clicked
+//             setEditableField(field);
+//             startRecording();
 //         }
 //     };
-
+ 
 //     const handleTemplateChange = (e) => {
 //         setSelectedTemplate(e.target.value);
 //         setFormData(templates[e.target.value].data);
@@ -565,29 +557,91 @@ const WebVoice = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Check if required fields are filled
+        const requiredFields = [
+            "description",
+            "website_name",
+            "home_description",
+            "home_paragraphs",
+            "about_description"
+        ];
+    
+        for (let field of requiredFields) {
+            if (!formData[field] || formData[field].trim() === "") {
+                alert(`Please fill in the ${field.replace("_", " ")} field.`);
+                return;  // Stop the form submission
+            }
+        }
+    
         // Formatting services before sending to API
-        const formattedServices = formData.services.map((service) => ({
+        const formattedServices = formData.services.map(service => ({
             name: service.name.trim(),
             description: service.description.trim(),
-            image: service.image.trim(),
+            image: service.image.trim()
         }));
-
-        const updatedFormData = {
-            ...formData,
-            services: formattedServices,
+    
+        const updatedFormData = { 
+            ...formData, 
+            services: formattedServices 
         };
-
+    
+        // Log the updated form data (for testing purposes)
+        console.log("Generated JSON:", JSON.stringify(updatedFormData, null, 2));
+    
+        // Optional: Alert the user that the data has been logged
+        alert("Form data logged to console!");
+    
         const endpoint = templates[selectedTemplate].endpoint;
         try {
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedFormData),
+                body: JSON.stringify(updatedFormData)
             });
-            const result = await response.json();
-            console.log("Response:", result);
-            alert("Data submitted successfully!");
+    
+            // Check if the response is OK
+            if (response.ok) {
+                const result = await response.json();
+    
+                // Check if the response contains base64 encoded file
+                if (result.zip_file_base64) {
+                    // Decode the base64 string to binary data
+                    const byteCharacters = atob(result.zip_file_base64);  // Decode base64 to a string of binary characters
+                    const byteArrays = [];
+    
+                    // Convert the string into byte arrays
+                    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                        const slice = byteCharacters.slice(offset, offset + 512);
+                        const byteNumbers = new Array(slice.length);
+    
+                        for (let i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);  // Convert character to byte number
+                        }
+    
+                        const byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
+                    }
+    
+                    // Create a Blob object from the byte arrays
+                    const blob = new Blob(byteArrays, { type: 'application/zip' });
+    
+                    // Create a URL for the Blob and trigger the download
+                    const zipFileUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = zipFileUrl;
+                    a.download = 'generated_files.zip';  // The filename for the downloaded file
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+    
+                    // alert("Data submitted successfully and file is downloading!");
+                } else {
+                    alert("No base64 data found in the response.");
+                }
+            } else {
+                alert("Submission failed.");
+            }
         } catch (error) {
             console.error("Error:", error);
             alert("Submission failed.");
