@@ -1,0 +1,145 @@
+/* General container styling */
+.container1 {
+    max-width: 1200px;
+    margin: 50px auto;
+    background-color: #f7f7f7;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+.heading1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2C3E50;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Form container styles */
+.form-container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group1 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-right: 10px;
+    width: 150px;
+}
+
+.input1 {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Mic icon button */
+.mic-button {
+    background-color: #f39c12;
+    color: white;
+    font-size: 20px;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mic-button:hover {
+    background-color: #e67e22;
+}
+
+.mic-button:focus {
+    outline: none;
+}
+
+/* Add Service Button */
+button.add-service {
+    margin-top: 10px;
+    background-color: #2ecc71;
+}
+
+button.add-service:hover {
+    background-color: #27ae60;
+}
+
+/* Speech result styling */
+.speech-result1 {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+.speech-result1 p {
+    word-wrap: break-word;
+}
+
+/* Form inputs for text fields that are disabled */
+input:disabled {
+    background-color: #f5f5f5;
+}
+
+/* Styling for the select dropdown */
+select {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    max-width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Making the "Submit" button more prominent */
+button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+

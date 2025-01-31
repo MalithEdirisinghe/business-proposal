@@ -15,6 +15,8 @@ import ProposalForm  from './components/ProposalForm';
 import MissingDetails  from './components/MissingDetails';
 import SelectMethodLogo from './components/logo/SelectMethodLogo';
 import SelectMethodWeb from './components/web/SelectMethodWeb';
+import WebText from './components/web/WebText';
+import WebVoice from './components/web/WebVoice';
 import UploadImage from './components/logo/UploadImage';
 import EditVoiceLogo from './components/logo/EditVoiceLogo';
 import EditTextLogo from './components/logo/EditTextLogo';
@@ -60,6 +62,14 @@ const App = () => {
   const handleLogoCreationlClick = () => {
     if (isAuthenticated) {
       navigate('/select-method-logo'); // Navigate to SelectLanguage if authenticated
+    } else {
+      navigate('/login'); // Navigate to Login if not authenticated
+    }
+  };
+
+  const handleWebCreationlClick = () => {
+    if (isAuthenticated) {
+      navigate('/select-method-web'); // Navigate to SelectLanguage if authenticated
     } else {
       navigate('/login'); // Navigate to Login if not authenticated
     }
@@ -113,6 +123,7 @@ const App = () => {
                 description="Launch a professional online presence without any technical skills."
                 image={web_img}
                 buttonText="Try it now"
+                handleClick={handleWebCreationlClick} 
               />
             </main>
           }
@@ -130,6 +141,8 @@ const App = () => {
         <Route path="/text-logo" element={<TextLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/edit-text-logo" element={<EditTextLogo isAuthenticated={isAuthenticated} />} />
         <Route path="/select-method-web" element={<SelectMethodWeb isAuthenticated={isAuthenticated} />} />
+        <Route path="/web-text" element={<WebText isAuthenticated={isAuthenticated} />} />
+        <Route path="/web-voice" element={<WebVoice isAuthenticated={isAuthenticated} />} />
         <Route path="/proposal-form" element={<ProposalForm isAuthenticated={isAuthenticated} />} />
         <Route path="/cover-template-generator" element={<CoverTemplateGenerator  isAuthenticated={isAuthenticated} />} />
         <Route path="/missing-details" element={<MissingDetails  isAuthenticated={isAuthenticated} />} />
