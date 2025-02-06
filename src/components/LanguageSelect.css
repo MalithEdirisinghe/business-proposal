@@ -41,7 +41,7 @@
 }
 
 /* Content styles */
-.language-select-content {
+.language-select-content-select {
     flex-grow: 1; /* Allow content to expand and push footer to bottom */
     display: flex;
     flex-direction: column;
@@ -50,9 +50,9 @@
     padding: 20px;
 }
 
-.language-select-content h2 {
+.language-select-content-select h2 {
     font-size: 1.8rem;
-    color: #002855;
+    color:rgb(17, 23, 29);
     margin-bottom: 40px;
 }
 

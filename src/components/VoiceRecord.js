@@ -89,8 +89,10 @@ const VoiceRecord = () => {
   const [editedText, setEditedText] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-    const [missingInfo, setMissingInfo] = useState({ status: "no", topics: [] });
+  const [missingInfo, setMissingInfo] = useState({ status: "no", topics: [] });
   const [showMissingInfoModal, setShowMissingInfoModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [translateText, setTranslateText] = useState("");
 
   const handleStartRecording = async () => {
     try {
@@ -200,35 +202,78 @@ const VoiceRecord = () => {
     });
   };
 
+  // Translate Sinhala text to English using Google Translate API
+  const translateSinhalaToEnglish = async (text) => {
+    try {
+      // Fetch translation from Google Translate API
+      const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=AIzaSyACXDLKVVG-LoFcZgnjllRBYCiDfCWNHzo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: text,
+          source: "si", // Sinhala source language
+          target: "en", // English target language
+        })
+      });
+
+      const data = await response.json();
+      if (data.data && data.data.translations) {
+        // alert('Translated Text: ' + data.data.translations[0].translatedText);
+        setTranslateText(data.data.translations[0].translatedText);
+        return data.data.translations[0].translatedText;
+      } else {
+        throw new Error("Translation failed");
+      }
+    } catch (error) {
+      console.error("Translation Error:", error);
+      return text; // Return original text if translation fails
+    }
+  };
+
   const handleSubmitEditedText = async () => {
     if (!editedText.trim()) {
       alert("No text to submit.");
       return;
     }
 
-    const doc = new jsPDF();
-    doc.setFont("NotoSansSinhala");
-    doc.setFontSize(12);
-    const margin = 15;
-    const lineHeight = 7;
-    let y = margin;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const splitText = doc.splitTextToSize(editedText, pageWidth - margin * 2);
-
-    splitText.forEach((line) => {
-      if (y > doc.internal.pageSize.getHeight() - margin) {
-        doc.addPage();
-        y = margin;
-      }
-      doc.text(line, margin, y);
-      y += lineHeight;
-    });
-
-    const pdfBlob = doc.output("blob");
-    const formData = new FormData();
-    formData.append("file", new File([pdfBlob], "converted_text.pdf", { type: "application/pdf" }));
-
     try {
+      setLoading(true);
+
+      let translatedText = editedText;
+
+      // If the language is Sinhala, translate to English
+      if (language === "Sinhala") {
+        translatedText = await translateSinhalaToEnglish(editedText); // Translate text to English
+      }
+
+      // Step 1: Convert the translated text (or original text if not Sinhala) to PDF
+      const doc = new jsPDF();
+      doc.setFont("NotoSansSinhala");
+      doc.setFontSize(12);
+      const margin = 15;
+      const lineHeight = 7;
+      let y = margin;
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      const splitText = doc.splitTextToSize(translatedText, pageWidth - margin * 2);
+      splitText.forEach((line) => {
+        if (y > doc.internal.pageSize.getHeight() - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += lineHeight;
+      });
+
+      const pdfBlob = doc.output("blob"); // Generate PDF as Blob
+
+      // Step 2: Create FormData object
+      const formData = new FormData();
+      formData.append("file", new File([pdfBlob], "translated_text.pdf", { type: "application/pdf" }));
+
+      // Step 3: Call API to check missing information
       const response = await fetch("http://127.0.0.1:8000/check-missing-topics/", {
         method: "POST",
         body: formData,
@@ -242,6 +287,7 @@ const VoiceRecord = () => {
       const result = await response.json();
       console.log("API Response:", result);
 
+      // Step 4: Handle response for missing information
       if (result.missing_info === "yes") {
         // If missing info is present, update the state and show modal
         alert(`Missing Topics: ${result.missing_topics.join(", ")}`);
@@ -257,8 +303,10 @@ const VoiceRecord = () => {
         navigate("/proposal-generation"); // Navigate to the next page
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert(`Upload failed. ${error.message}`);
+      console.error("Error uploading to ML:", error);
+      alert("Upload failed. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -387,7 +435,7 @@ const VoiceRecord = () => {
               className="edit-textarea"
             />
             <button className="upload-button" onClick={handleSubmitEditedText}>
-              {content.submitText}
+              {loading ? <FaSpinner className="spinner" /> : content.submitText}
             </button>
             <button className="upload-button" onClick={() => setShowModal(false)}>
               {content.close}
@@ -441,34 +489,57 @@ const VoiceRecord = () => {
               </button>
               <button
                 className="add-details-button"
-                onClick={() => {
-                  const doc = new jsPDF();
-                  doc.setFont("NotoSansSinhala");
-                  doc.setFontSize(12);
-                  const margin = 15;
-                  const lineHeight = 7;
-                  let y = margin;
-                  const pageWidth = doc.internal.pageSize.getWidth();
+                onClick={async () => {
+                  try {
+                    let generatedPdfFile;
 
-                  const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
-                  splitText.forEach((line) => {
-                    if (y > doc.internal.pageSize.getHeight() - margin) {
-                      doc.addPage();
-                      y = margin;
-                    }
-                    doc.text(line, margin, y);
-                    y += lineHeight;
-                  });
+                    // Create PDF from the edited text
+                    const doc = new jsPDF();
+                    doc.setFont("NotoSansSinhala");
+                    doc.setFontSize(12);
+                    const margin = 15;
+                    const lineHeight = 7;
+                    let y = margin;
+                    const pageWidth = doc.internal.pageSize.getWidth();
 
-                  // Convert generated PDF to Blob
-                  const pdfBlob = doc.output("blob");
-                  const generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
+                    // Choose the appropriate text based on language
+                    const textToUse = language === "Sinhala" ? translateText : editedText;
 
-                  // ✅ Check if PDF is successfully created
-                  console.log("Generated PDF File:", generatedPdfFile);
-                  console.log("Missing info 2:", missingInfo);
-                  // Navigate to MissingDetails.js with missingInfo and PDF file
-                  navigate("/missing-details", { state: { missingInfo, generatedPdfFile, language } });
+                    // Generate PDF content
+                    const splitText = doc.splitTextToSize(textToUse, pageWidth - margin * 2);
+                    splitText.forEach((line) => {
+                      if (y > doc.internal.pageSize.getHeight() - margin) {
+                        doc.addPage();
+                        y = margin;
+                      }
+                      doc.text(line, margin, y);
+                      y += lineHeight;
+                    });
+
+                    // Save the PDF locally if needed
+                    doc.save('proposal.pdf');
+
+                    // Create the PDF file object for navigation
+                    const pdfBlob = doc.output("blob");
+                    generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
+
+                    // Log for debugging
+                    console.log("PDF created successfully:", generatedPdfFile);
+                    console.log("Missing info:", missingInfo);
+                    console.log("Language:", language);
+
+                    // Navigate to MissingDetails.js with all required data
+                    navigate("/missing-details", {
+                      state: {
+                        missingInfo,
+                        generatedPdfFile,
+                        language
+                      }
+                    });
+                  } catch (error) {
+                    console.error("Error generating PDF:", error);
+                    alert("Failed to generate PDF. Please try again.");
+                  }
                 }}
               >
                 {content.addMissingDetails}

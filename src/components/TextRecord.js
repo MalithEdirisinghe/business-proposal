@@ -4,15 +4,19 @@ import { BsUpload } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document, Page } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import chat from '../assets/chat.png';
 import jsPDF from 'jspdf';
 import './NotoSansSinhala-normal';
 import { FaSpinner } from "react-icons/fa";
 
+// PDF.js configuration
+import * as pdfjsLib from 'pdfjs-dist';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Configure worker
+const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.min.js');
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const translations = {
   English: {
@@ -88,6 +92,7 @@ const TextRecord = () => {
   const [missingInfo, setMissingInfo] = useState({ status: "no", topics: [] });
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [translateText, setTranslateText] = useState("");
 
   const fetchSuggestions = async (input) => {
     if (!input || language !== "Sinhala") {
@@ -146,13 +151,8 @@ const TextRecord = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.type === "application/pdf") {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setPdfData(new Uint8Array(event.target.result));
-        };
-        reader.readAsArrayBuffer(file);
-
-        setPdfName(file.name); // Save the file name
+        setPdfData(file);
+        setPdfName(file.name);
         setText(`[PDF Added: ${file.name}]`);
       } else {
         alert("Please upload a valid PDF file.");
@@ -161,73 +161,175 @@ const TextRecord = () => {
   };
 
   const handleUploadToML = async () => {
-    if (!text.trim()) {
-      alert("Please enter some text before uploading to ML.");
-      return;
-    }
-
     try {
       setLoading(true);
-      // Step 1: Convert text to PDF
-      const doc = new jsPDF();
-      doc.setFont("NotoSansSinhala");
-      doc.setFontSize(12);
-      const margin = 15;
-      const lineHeight = 7;
-      let y = margin;
-      const pageWidth = doc.internal.pageSize.getWidth();
-
-      const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
-      splitText.forEach((line) => {
-        if (y > doc.internal.pageSize.getHeight() - margin) {
-          doc.addPage();
-          y = margin;
-        }
-        doc.text(line, margin, y);
-        y += lineHeight;
-      });
-
-      const pdfBlob = doc.output("blob"); // Generate PDF as a Blob
-
-      // Step 2: Create FormData object
       const formData = new FormData();
-      formData.append("file", new File([pdfBlob], "converted_text.pdf", { type: "application/pdf" }));
 
-      // Step 3: Call API to check missing information
+      if (pdfData) {
+        if (language === "Sinhala") {
+          try {
+            // Read the PDF file
+            const reader = new FileReader();
+            const pdfText = await new Promise((resolve, reject) => {
+              reader.onload = async (event) => {
+                try {
+                  console.log("PDF loaded, starting text extraction...");
+                  const typedArray = new Uint8Array(event.target.result);
+
+                  // Load the PDF document
+                  const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+                  console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
+
+                  let fullText = '';
+
+                  // Extract text from each page
+                  for (let i = 1; i <= pdf.numPages; i++) {
+                    console.log(`Processing page ${i}...`);
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    const text = content.items.map(item => item.str).join(' ');
+                    fullText += text + ' ';
+                  }
+
+                  console.log("Text extraction completed");
+                  console.log("Extracted text:", fullText);
+                  resolve(fullText);
+                } catch (error) {
+                  console.error("Error in PDF processing:", error);
+                  reject(error);
+                }
+              };
+              reader.onerror = (error) => {
+                console.error("Error reading file:", error);
+                reject(error);
+              };
+              reader.readAsArrayBuffer(pdfData);
+            });
+
+            console.log("Starting translation...");
+            const translatedText = await translateSinhalaToEnglish(pdfText);
+            console.log("Translation completed:", translatedText);
+
+            // Create new PDF with translated text
+            const doc = new jsPDF();
+            doc.setFont("NotoSansSinhala");
+            doc.setFontSize(12);
+            const margin = 15;
+            const lineHeight = 7;
+            let y = margin;
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            const splitText = doc.splitTextToSize(translatedText, pageWidth - margin * 2);
+            splitText.forEach((line) => {
+              if (y > doc.internal.pageSize.getHeight() - margin) {
+                doc.addPage();
+                y = margin;
+              }
+              doc.text(line, margin, y);
+              y += lineHeight;
+            });
+
+            const pdfBlob = doc.output("blob");
+            formData.append("file", new File([pdfBlob], "translated_proposal.pdf", { type: "application/pdf" }));
+          } catch (error) {
+            console.error("Error processing Sinhala PDF:", error);
+            throw new Error("Failed to process Sinhala PDF: " + error.message);
+          }
+        } else {
+          // If language is English, use the original PDF
+          formData.append("file", pdfData);
+        }
+      } else if (text.trim()) {
+        // If text is entered, convert to PDF
+        let translatedText = text;
+        if (language === "Sinhala") {
+          translatedText = await translateSinhalaToEnglish(text);
+        }
+
+        const doc = new jsPDF();
+        doc.setFont("NotoSansSinhala");
+        doc.setFontSize(12);
+        const margin = 15;
+        const lineHeight = 7;
+        let y = margin;
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        const splitText = doc.splitTextToSize(translatedText, pageWidth - margin * 2);
+        splitText.forEach((line) => {
+          if (y > doc.internal.pageSize.getHeight() - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(line, margin, y);
+          y += lineHeight;
+        });
+
+        const pdfBlob = doc.output("blob");
+        formData.append("file", new File([pdfBlob], "translated_text.pdf", { type: "application/pdf" }));
+      } else {
+        alert("Please enter text or upload a PDF file.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Sending to backend...");
       const response = await fetch("http://127.0.0.1:8000/check-missing-topics/", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        const errorDetails = await response.text();
-        throw new Error(`API Error: ${errorDetails}`);
+        const errorText = await response.text();
+        console.error("Backend error:", errorText);
+        throw new Error(`API Error: ${errorText}`);
       }
 
       const result = await response.json();
-      console.log("API Response:", result);
+      console.log("Backend response:", result);
 
-      // Step 4: Handle response for missing information
       if (result.missing_info === "yes") {
-        // If missing info is present, update the state and show modal
-        alert(`Missing Topics: ${result.missing_topics.join(", ")}`);
-
-        // Apply translations for Sinhala
         const translatedTopics = result.missing_topics.map(topic => content.missingInfo[topic] || topic);
-
-        setMissingInfo({ status: "yes", topics: translatedTopics }); // Track missing info state with topics
+        setMissingInfo({ status: "yes", topics: translatedTopics });
       } else {
-        // If no missing info, proceed with the next step
         setMissingInfo({ status: "no", topics: [] });
-        alert("No missing information found. Proceeding...");
-        navigate("/proposal-generation"); // Navigate to the next page
+        navigate("/proposal-generation");
+      }
+
+    } catch (error) {
+      console.error("Error in handleUploadToML:", error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Translate Sinhala text to English using Google Translate API
+  const translateSinhalaToEnglish = async (text) => {
+    try {
+      // Fetch translation from Google Translate API
+      const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=AIzaSyACXDLKVVG-LoFcZgnjllRBYCiDfCWNHzo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: text,
+          source: "si", // Sinhala source language
+          target: "en", // English target language
+        })
+      });
+
+      const data = await response.json();
+      if (data.data && data.data.translations) {
+        // alert('Translated Text: ' + data.data.translations[0].translatedText);
+        setTranslateText(data.data.translations[0].translatedText);
+        return data.data.translations[0].translatedText;
+      } else {
+        throw new Error("Translation failed");
       }
     } catch (error) {
-      console.error("Error uploading to ML:", error);
-      setUploadStatus("Upload failed. Please try again.");
-      alert("Upload failed. Please try again.");
-    } finally {
-      setLoading(false); // Stop loading
+      console.error("Translation Error:", error);
+      return text; // Return original text if translation fails
     }
   };
 
@@ -402,35 +504,109 @@ const TextRecord = () => {
               </button>
               <button
                 className="add-details-button"
-                onClick={() => {
-                  const doc = new jsPDF();
-                  doc.setFont("NotoSansSinhala");
-                  doc.setFontSize(12);
-                  const margin = 15;
-                  const lineHeight = 7;
-                  let y = margin;
-                  const pageWidth = doc.internal.pageSize.getWidth();
+                onClick={async () => {
+                  let generatedPdfFile;
 
-                  const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
-                  splitText.forEach((line) => {
-                    if (y > doc.internal.pageSize.getHeight() - margin) {
-                      doc.addPage();
-                      y = margin;
+                  try {
+                    if (pdfData) {
+                      if (language === "Sinhala") {
+                        // Extract text from PDF
+                        const reader = new FileReader();
+                        const pdfText = await new Promise((resolve, reject) => {
+                          reader.onload = async (event) => {
+                            try {
+                              const typedArray = new Uint8Array(event.target.result);
+                              const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+                              let fullText = '';
+
+                              for (let i = 1; i <= pdf.numPages; i++) {
+                                const page = await pdf.getPage(i);
+                                const content = await page.getTextContent();
+                                const text = content.items.map(item => item.str).join(' ');
+                                fullText += text + ' ';
+                              }
+                              resolve(fullText);
+                            } catch (error) {
+                              reject(error);
+                            }
+                          };
+                          reader.readAsArrayBuffer(pdfData);
+                        });
+
+                        // Translate the extracted text
+                        const translatedText = await translateSinhalaToEnglish(pdfText);
+
+                        // Create new PDF with translated text
+                        const doc = new jsPDF();
+                        doc.setFont("NotoSansSinhala");
+                        doc.setFontSize(12);
+                        const margin = 15;
+                        const lineHeight = 7;
+                        let y = margin;
+                        const pageWidth = doc.internal.pageSize.getWidth();
+
+                        const splitText = doc.splitTextToSize(translatedText, pageWidth - margin * 2);
+                        splitText.forEach((line) => {
+                          if (y > doc.internal.pageSize.getHeight() - margin) {
+                            doc.addPage();
+                            y = margin;
+                          }
+                          doc.text(line, margin, y);
+                          y += lineHeight;
+                        });
+
+                        // Save the translated PDF
+                        doc.save("translated_proposal.pdf");
+                        const pdfBlob = doc.output("blob");
+                        generatedPdfFile = new File([pdfBlob], "translated_proposal.pdf", { type: "application/pdf" });
+                      } else {
+                        // If English, use original PDF
+                        const url = URL.createObjectURL(pdfData);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'save.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+
+                        generatedPdfFile = pdfData;
+                      }
+                    } else {
+                      // Generate PDF from text
+                      const doc = new jsPDF();
+                      doc.setFont("NotoSansSinhala");
+                      doc.setFontSize(12);
+                      const margin = 15;
+                      const lineHeight = 7;
+                      let y = margin;
+                      const pageWidth = doc.internal.pageSize.getWidth();
+
+                      const splitText = doc.splitTextToSize(translateText, pageWidth - margin * 2);
+                      splitText.forEach((line) => {
+                        if (y > doc.internal.pageSize.getHeight() - margin) {
+                          doc.addPage();
+                          y = margin;
+                        }
+                        doc.text(line, margin, y);
+                        y += lineHeight;
+                      });
+                      doc.save("save.pdf");
+                      const pdfBlob = doc.output("blob");
+                      generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
                     }
-                    doc.text(line, margin, y);
-                    y += lineHeight;
-                  });
 
-                  doc.save("save.pdf");
-                  // Convert generated PDF to Blob
-                  const pdfBlob = doc.output("blob");
-                  const generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
-
-                  // ✅ Check if PDF is successfully created
-                  console.log("Generated PDF File:", generatedPdfFile);
-                  console.log("Missing info 2:", missingInfo);
-                  // Navigate to MissingDetails.js with missingInfo and PDF file
-                  navigate("/missing-details", { state: { missingInfo, generatedPdfFile, language } });
+                    navigate("/missing-details", {
+                      state: {
+                        missingInfo,
+                        generatedPdfFile,
+                        language
+                      }
+                    });
+                  } catch (error) {
+                    console.error("Error processing PDF:", error);
+                    alert("Failed to process the PDF. Please try again.");
+                  }
                 }}
               >
                 {content.addMissingDetails}
@@ -445,6 +621,7 @@ const TextRecord = () => {
             file={pdfData}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={null}
+            error={null}  // This will hide the error message
           >
             {Array.from(new Array(numPages), (index) => (
               <Page key={`page_${index + 1}`} pageNumber={index + 1} />

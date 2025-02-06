@@ -7,7 +7,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import Modal from './Modal';
 import { jsPDF } from "jspdf";
 import "./NotoSansSinhala-normal";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 
 // Set PDF.js worker source locally
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
@@ -140,74 +140,167 @@ const MissingDetails = () => {
 
     alert(`Details for "${topic}" submitted successfully!`);
   };
-  
+
   const handleComplete = async () => {
     if (!generatedPdfFile) {
       alert("No base PDF found.");
       return;
     }
-
+  
     try {
       const reader = new FileReader();
       reader.readAsArrayBuffer(generatedPdfFile);
-
+  
       reader.onload = async function (event) {
-        const existingPdfBytes = event.target.result;
-
-        // Load existing PDF
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-        const { width, height } = pages[0].getSize();
-
-        // Add a new page for missing details
-        const newPage = pdfDoc.addPage([width, height]);
-        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        newPage.setFont(font);
-        newPage.setFontSize(16);
-        newPage.drawText("Added Missing Details", { x: 50, y: height - 50, color: rgb(0, 0, 0) });
-
-        let y = height - 80;
-        for (const topic in formData) {
-          if (formData[topic].length > 0) {
-            newPage.setFontSize(14);
-            newPage.drawText(`${topic}:`, { x: 50, y, color: rgb(0.1, 0.1, 0.1) });
-            y -= 20;
-
-            formData[topic].forEach((entry) => {
-              newPage.drawText(`- ${entry}`, { x: 70, y, color: rgb(0.2, 0.2, 0.2) });
-              y -= 20;
-            });
-
-            y -= 10;
+        // First translate all form data if language is Sinhala
+        const translatedFormData = { ...formData };
+        const translatedTopics = {}; // To store translated topics
+  
+        if (language === "Sinhala") {
+          // Translate the topic labels first
+          for (const topic in formData) {
+            // Translate the topic (like "Company Overview" -> "සමාගම් සාරාංශය")
+            try {
+              const response = await fetch(
+                `https://translation.googleapis.com/language/translate/v2?key=AIzaSyACXDLKVVG-LoFcZgnjllRBYCiDfCWNHzo`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    q: topic,
+                    source: "si",
+                    target: "en",
+                  }),
+                }
+              );
+              
+              const data = await response.json();
+              translatedTopics[topic] = data.data.translations[0].translatedText;
+            } catch (error) {
+              console.error("Translation error for topic:", error);
+              translatedTopics[topic] = topic; // If translation fails, keep the original topic
+            }
+          }
+  
+          // Now translate each entry for each topic
+          for (const topic in formData) {
+            if (formData[topic].length > 0) {
+              const translatedEntries = await Promise.all(
+                formData[topic].map(async (entry) => {
+                  try {
+                    const response = await fetch(
+                      `https://translation.googleapis.com/language/translate/v2?key=AIzaSyACXDLKVVG-LoFcZgnjllRBYCiDfCWNHzo`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          q: entry,
+                          source: "si", // Sinhala
+                          target: "en", // English
+                        }),
+                      }
+                    );
+                    
+                    const data = await response.json();
+                    return data.data.translations[0].translatedText;
+                  } catch (error) {
+                    console.error("Translation error:", error);
+                    return entry; // Return original text if translation fails
+                  }
+                })
+              );
+              translatedFormData[topic] = translatedEntries;
+            }
           }
         }
+  
+        // Create a new PDF with the translated missing details
+        const doc = new jsPDF();
+        doc.setFont("NotoSansSinhala");
+  
+        let y = 20;
+        const margin = 20;
+        const lineHeight = 10;
+  
+        // Add title in both languages if the original was in Sinhala
+        doc.setFontSize(16);
+        doc.text("Added Missing Details", margin, y);
+        y += lineHeight * 2;
+  
+        // Add content - both original and translated if Sinhala
+        for (const topic in formData) {
+          if (formData[topic].length > 0) {
+            doc.setFontSize(14);
+            // If language is Sinhala, use the translated topic name
+            const topicName = language === "Sinhala" ? translatedTopics[topic] : topic;
+            doc.text(`${topicName}:`, margin, y);  // Add translated topic name
+            y += lineHeight;
+  
+            doc.setFontSize(12);
+            formData[topic].forEach((entry, index) => {
+              if (y > 270) {
+                doc.addPage();
+                y = 20;
+              }
 
-        // Save updated PDF
-        const updatedPdfBytes = await pdfDoc.save();
-        const updatedPdfBlob = new Blob([updatedPdfBytes], { type: "application/pdf" });
-        const updatedPdfFile = new File([updatedPdfBlob], "Updated_Business_Proposal.pdf", { type: "application/pdf" });
-
-        // **Download the Updated PDF**
-        // const url = URL.createObjectURL(updatedPdfBlob);
-        // const a = document.createElement("a");
-        // a.href = url;
-        // a.download = "Updated_Business_Proposal.pdf";
-        // document.body.appendChild(a);
-        // a.click();
-        // document.body.removeChild(a);
-        // URL.revokeObjectURL(url);
-
-        // **Navigate After Download**
+              // Add translated text if language is Sinhala
+              if (language === "Sinhala") {
+                doc.text(`${translatedFormData[topic][index]}`, margin + 10, y);
+                y += lineHeight;
+              }
+            });
+  
+            y += lineHeight / 2;
+          }
+        }
+  
+        // Get the PDF with missing details as bytes
+        const missingDetailsBytes = doc.output('arraybuffer');
+  
+        // Load both PDFs
+        const existingPdfDoc = await PDFDocument.load(event.target.result);
+        const missingDetailsPdfDoc = await PDFDocument.load(missingDetailsBytes);
+  
+        // Create merged PDF
+        const mergedPdfDoc = await PDFDocument.create();
+  
+        // Copy pages from both PDFs
+        const existingPages = await mergedPdfDoc.copyPages(
+          existingPdfDoc,
+          existingPdfDoc.getPageIndices()
+        );
+        existingPages.forEach(page => mergedPdfDoc.addPage(page));
+  
+        const missingDetailsPages = await mergedPdfDoc.copyPages(
+          missingDetailsPdfDoc,
+          missingDetailsPdfDoc.getPageIndices()
+        );
+        missingDetailsPages.forEach(page => mergedPdfDoc.addPage(page));
+  
+        // Save and create final PDF
+        const mergedPdfBytes = await mergedPdfDoc.save();
+        const mergedPdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+        const updatedPdfFile = new File([mergedPdfBlob], "Updated_Business_Proposal.pdf", {
+          type: "application/pdf"
+        });
+        
+        // Navigate to next page with updated PDF
         setTimeout(() => {
-          navigate("/proposal-form", { state: { generatedPdfFile: updatedPdfFile } });
-        }, 1000); // Wait 1 second before navigating
+          navigate("/proposal-form", {
+            state: { generatedPdfFile: updatedPdfFile }
+          });
+        }, 1000);
       };
     } catch (error) {
       console.error("Error updating PDF:", error);
-      alert("Failed to update the PDF.");
+      alert("Failed to update the PDF. Please try again.");
     }
   };
-
+  
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleViewMoreDetails = () => {

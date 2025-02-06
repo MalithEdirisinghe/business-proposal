@@ -22,7 +22,7 @@ const LanguageSelect = () => {
 
   return (
     <div className="language-select-container">
-      <main className="language-select-content">
+      <main className="language-select-content-select">
         <h2>{method ? `${method} Method Selected` : 'Select Your Preferred Language'}</h2>
         <p>
           {method
