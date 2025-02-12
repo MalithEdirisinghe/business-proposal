@@ -4,19 +4,33 @@ import "../components/ProposalForm.css";
 
 const ProposalForm = () => {
   const [businessName, setBusinessName] = useState("");
-  const [businessDomain, setBusinessDomain] = useState("");
+  const [businessDomain, setBusinessDomain] = useState("Agriculture");
   const [isExisting, setIsExisting] = useState("Yes");
   const [userInstructions, setUserInstructions] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("Template 1");
   const [responseMessage, setResponseMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const { generatedPdfFile } = location.state || {}; // Get the generated file from state
+  const { generatedPdfFile } = location.state || {};
   const navigate = useNavigate();
+
+  const businessDomains = [
+    "Agriculture",
+    "Tourism and Hospitality",
+    "Manufacturing and Exporting",
+    "Technology",
+    "Retail and E-Commerce",
+    "Education and Training",
+    "Health and Pharmaceutical",
+    "Real Estate and Construction",
+    "Energy and Utilities",
+    "Financial Services"
+  ];
 
   useEffect(() => {
     if (!generatedPdfFile) {
       alert("No generated file provided!");
-      navigate("/"); // Redirect the user if no file is provided
+      navigate("/");
     }
   }, [generatedPdfFile, navigate]);
 
@@ -28,8 +42,11 @@ const ProposalForm = () => {
       return;
     }
 
+    setIsLoading(true);
+    setResponseMessage("");
+
     const formData = new FormData();
-    formData.append("file", generatedPdfFile); // Use the passed generated file
+    formData.append("file", generatedPdfFile);
     formData.append("business_name", businessName);
     formData.append("business_domain", businessDomain);
     formData.append("is_existing", isExisting);
@@ -47,13 +64,13 @@ const ProposalForm = () => {
       }
 
       const data = await response.json();
-      // Navigate to CoverTemplateGenerator.js with the response data
       navigate("/cover-template-generator", { state: { headings: data.headings } });
-
       setResponseMessage("Proposal generated successfully!");
     } catch (error) {
       console.error("Error:", error);
       setResponseMessage("Failed to generate the proposal. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,13 +97,18 @@ const ProposalForm = () => {
 
         <div className="form-group">
           <label>Business Domain:</label>
-          <input
-            type="text"
+          <select
             value={businessDomain}
             onChange={(e) => setBusinessDomain(e.target.value)}
-            placeholder="Enter business domain"
             required
-          />
+            className="domain-select"
+          >
+            {businessDomains.map((domain) => (
+              <option key={domain} value={domain}>
+                {domain}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">
@@ -94,6 +116,7 @@ const ProposalForm = () => {
           <select
             value={isExisting}
             onChange={(e) => setIsExisting(e.target.value)}
+            className="existing-select"
           >
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -116,6 +139,7 @@ const ProposalForm = () => {
           <select
             value={selectedTemplate}
             onChange={(e) => setSelectedTemplate(e.target.value)}
+            className="template-select"
           >
             <option value="Template 1">Template 1</option>
             <option value="Template 2">Template 2</option>
@@ -123,8 +147,15 @@ const ProposalForm = () => {
           </select>
         </div>
 
-        <button type="submit" className="submit-button">
-          Generate
+        <button type="submit" className="submit-button" disabled={isLoading}>
+          {isLoading ? (
+            <div className="button-content">
+              <div className="spinner"></div>
+              <span>Generating...</span>
+            </div>
+          ) : (
+            "Generate"
+          )}
         </button>
       </form>
       {responseMessage && <p className="response-message">{responseMessage}</p>}

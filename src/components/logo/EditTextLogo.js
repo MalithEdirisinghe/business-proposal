@@ -6,16 +6,19 @@ import { FaTimes } from "react-icons/fa";
 const EditTextLogo = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const imageUrl = location.state?.imageUrl;
+
+  // Updated state variables to match API parameters
   const [logoName, setLogoName] = useState("");
   const [slogan, setSlogan] = useState("");
+  const [backgroundColor, setBackgroundColor] = useState("white");
   const [fontSize, setFontSize] = useState(22);
-  const [textColor, setTextColor] = useState("white");
+  const [position, setPosition] = useState("bottom");
+  const [nameColor, setNameColor] = useState("yellow");
+  const [sloganColor, setSloganColor] = useState("purple");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageBlob, setGeneratedImageBlob] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  // Get the image URL passed via location state
-  const imageUrl = location.state?.imageUrl;
 
   const handleExport = async () => {
     if (!imageUrl) {
@@ -30,12 +33,16 @@ const EditTextLogo = () => {
       const response = await fetch(imageUrl);
       const logoBlob = await response.blob();
 
+      // Updated FormData to include all API parameters
       const formData = new FormData();
       formData.append("logo", logoBlob, "logo.png");
       formData.append("name", logoName);
       formData.append("slogan", slogan);
-      formData.append("background", textColor);
+      formData.append("background", backgroundColor);
       formData.append("name_font_size", fontSize);
+      formData.append("position", position);
+      formData.append("name_color", nameColor);
+      formData.append("slogan_color", sloganColor);
 
       const apiResponse = await fetch("http://127.0.0.1:5000/edit-logo", {
         method: "POST",
@@ -59,6 +66,7 @@ const EditTextLogo = () => {
     }
   };
 
+  // Rest of the utility functions remain the same
   const downloadGeneratedImage = () => {
     if (!generatedImageBlob) return;
     const url = URL.createObjectURL(generatedImageBlob);
@@ -75,7 +83,7 @@ const EditTextLogo = () => {
 
   return (
     <div className="edit-text-logo-container">
-      {/* Left Panel */}
+      {/* Left Panel remains the same */}
       <div className="left-panel">
         <div className="branding">
           <h1>BizConnect Lanka</h1>
@@ -91,7 +99,7 @@ const EditTextLogo = () => {
         </div>
       </div>
 
-      {/* Right Panel */}
+      {/* Updated Right Panel with new controls */}
       <div className="right-panel">
         <h2>Preview Your Logo</h2>
         <div className="image-preview">
@@ -140,16 +148,58 @@ const EditTextLogo = () => {
           </div>
 
           <div className="control-row">
-            <label htmlFor="color-picker">Select Background Color:</label>
+            <label htmlFor="position">Position:</label>
             <select
-              id="color-picker"
-              value={textColor}
-              onChange={(e) => setTextColor(e.target.value)}
+              id="position"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            >
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+
+          <div className="control-row">
+            <label htmlFor="background-color">Background Color:</label>
+            <select
+              id="background-color"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
             >
               <option value="white">White</option>
               <option value="red">Red</option>
               <option value="green">Green</option>
               <option value="blue">Blue</option>
+              <option value="black">Black</option>
+            </select>
+          </div>
+
+          <div className="control-row">
+            <label htmlFor="name-color">Name Color:</label>
+            <select
+              id="name-color"
+              value={nameColor}
+              onChange={(e) => setNameColor(e.target.value)}
+            >
+              <option value="white">White</option>
+              <option value="yellow">Yellow</option>
+              <option value="purple">Purple</option>
+              <option value="black">Black</option>
+            </select>
+          </div>
+
+          <div className="control-row">
+            <label htmlFor="slogan-color">Slogan Color:</label>
+            <select
+              id="slogan-color"
+              value={sloganColor}
+              onChange={(e) => setSloganColor(e.target.value)}
+            >
+              <option value="white">White</option>
+              <option value="yellow">Yellow</option>
+              <option value="purple">Purple</option>
               <option value="black">Black</option>
             </select>
           </div>
@@ -165,6 +215,7 @@ const EditTextLogo = () => {
         </div>
       </div>
 
+      {/* Modal remains the same */}
       {showModal && (
         <div className="modal">
           <div className="modal-content">

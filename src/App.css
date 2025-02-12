@@ -3,8 +3,8 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  color: #002855; /* Dark Blue Text */
-  background-color: #f8f9fa; /* Light Gray Background */
+  color: #002855;
+  background-color: #f8f9fa;
 }
 
 .App {
@@ -13,7 +13,7 @@ body, html {
 
 /* Header */
 header {
-  background-color: #002855; /* Dark Blue Background */
+  background-color: #002855;
   padding: 20px;
   display: flex;
   justify-content: space-between;
@@ -40,21 +40,21 @@ header .actions button {
 }
 
 header .actions .login-btn {
-  background-color: #ffcc00; /* Yellow Button */
-  color: #002855; /* Dark Blue Text */
+  background-color: #ffcc00;
+  color: #002855;
 }
 
 header .actions .login-btn:hover {
-  background-color: #ffd633; /* Light Yellow */
+  background-color: #ffd633;
 }
 
 header .actions .sign-in-btn {
-  background-color: #007bff; /* Blue Button */
+  background-color: #007bff;
   color: white;
 }
 
 header .actions .sign-in-btn:hover {
-  background-color: #0056b3; /* Darker Blue */
+  background-color: #0056b3;
 }
 
 /* Hero Section */

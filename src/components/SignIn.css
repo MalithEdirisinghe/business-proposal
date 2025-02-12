@@ -25,11 +25,13 @@
   .sign-in-form h1 {
     font-size: 2rem;
     margin-bottom: 10px;
+    color: black;
   }
   
   .sign-in-form p {
     font-size: 1rem;
     margin-bottom: 20px;
+    color: black;
   }
   
   .sign-in-form form {
@@ -49,6 +51,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    color: black;
   }
   
   .sign-in-form .sign-in-btn {

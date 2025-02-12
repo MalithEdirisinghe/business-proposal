@@ -1,18 +1,19 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import "./EditVoiceLogo.css";
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import './EditVoiceLogo.css';
 import { FaMicrophone, FaTimes } from "react-icons/fa";
 
 const EditVoiceLogo = () => {
   const location = useLocation();
-
-  // Get the image URL from the passed state
   const imageUrl = location.state?.imageUrl;
 
   const [logoName, setLogoName] = useState("");
   const [slogan, setSlogan] = useState("");
   const [backgroundColor, setBackgroundColor] = useState("white");
   const [fontSize, setFontSize] = useState(22);
+  const [position, setPosition] = useState("bottom");
+  const [nameColor, setNameColor] = useState("black");
+  const [sloganColor, setSloganColor] = useState("black");
   const [listeningFor, setListeningFor] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageBlob, setGeneratedImageBlob] = useState(null);
@@ -29,24 +30,47 @@ const EditVoiceLogo = () => {
     recognition.onresult = (event) => {
       const spokenText = event.results[0][0].transcript.trim().toLowerCase().replace(/[.,!?]+$/, "");
 
-      if (field === "logoName") {
-        setLogoName(spokenText);
-      } else if (field === "slogan") {
-        setSlogan(spokenText);
-      } else if (field === "backgroundColor") {
-        const validColors = ["white", "red", "green", "blue", "black"];
-        if (validColors.includes(spokenText)) {
-          setBackgroundColor(spokenText);
+      const handleColorInput = (text, setter) => {
+        const validColors = ["white", "red", "green", "blue", "black", "yellow", "purple"];
+        if (validColors.includes(text)) {
+          setter(text);
         } else {
-          alert("Invalid color. Please say one of: white, red, green, blue, black.");
+          alert(`Invalid color. Please say one of: ${validColors.join(", ")}`);
         }
-      } else if (field === "fontSize") {
-        const size = parseInt(spokenText, 10);
-        if (!isNaN(size) && size >= 10 && size <= 100) {
-          setFontSize(size);
-        } else {
-          alert("Invalid font size. Please say a number between 10 and 100.");
-        }
+      };
+
+      switch (field) {
+        case "logoName":
+          setLogoName(spokenText);
+          break;
+        case "slogan":
+          setSlogan(spokenText);
+          break;
+        case "backgroundColor":
+          handleColorInput(spokenText, setBackgroundColor);
+          break;
+        case "fontSize":
+          const size = parseInt(spokenText, 10);
+          if (!isNaN(size) && size >= 10 && size <= 100) {
+            setFontSize(size);
+          } else {
+            alert("Invalid font size. Please say a number between 10 and 100.");
+          }
+          break;
+        case "position":
+          const validPositions = ["top", "bottom"];
+          if (validPositions.includes(spokenText)) {
+            setPosition(spokenText);
+          } else {
+            alert("Invalid position. Please say either 'top' or 'bottom'.");
+          }
+          break;
+        case "nameColor":
+          handleColorInput(spokenText, setNameColor);
+          break;
+        case "sloganColor":
+          handleColorInput(spokenText, setSloganColor);
+          break;
       }
       setListeningFor(null);
     };
@@ -78,6 +102,9 @@ const EditVoiceLogo = () => {
       formData.append("slogan", slogan);
       formData.append("background", backgroundColor);
       formData.append("name_font_size", fontSize);
+      formData.append("position", position);
+      formData.append("name_color", nameColor);
+      formData.append("slogan_color", sloganColor);
 
       const apiResponse = await fetch("http://127.0.0.1:5000/edit-logo", {
         method: "POST",
@@ -141,7 +168,7 @@ const EditVoiceLogo = () => {
         </div>
 
         <div className="voice-inputs">
-          <div className="voice-input-row">
+        <div className="voice-input-row">
             <label>Logo Name:</label>
             <input type="text" value={logoName} readOnly placeholder="Logo Name" />
             <button
@@ -152,7 +179,6 @@ const EditVoiceLogo = () => {
               <FaMicrophone />
             </button>
           </div>
-
           <div className="voice-input-row">
             <label>Slogan:</label>
             <input type="text" value={slogan} readOnly placeholder="Slogan" />
@@ -188,32 +214,73 @@ const EditVoiceLogo = () => {
               <FaMicrophone />
             </button>
           </div>
+
+          <div className="voice-input-row">
+            <label>Position:</label>
+            <input type="text" value={position} readOnly placeholder="Position" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("position")}
+              disabled={listeningFor === "position"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
+
+          <div className="voice-input-row">
+            <label>Name Color:</label>
+            <input type="text" value={nameColor} readOnly placeholder="Name Color" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("nameColor")}
+              disabled={listeningFor === "nameColor"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
+
+          <div className="voice-input-row">
+            <label>Slogan Color:</label>
+            <input type="text" value={sloganColor} readOnly placeholder="Slogan Color" />
+            <button
+              className="microphone-button"
+              onClick={() => startListening("sloganColor")}
+              disabled={listeningFor === "sloganColor"}
+            >
+              <FaMicrophone />
+            </button>
+          </div>
         </div>
 
-        <button className="generate-button" onClick={handleGenerate} disabled={isGenerating}>
+        <button
+          className="download-button"
+          onClick={handleGenerate}
+          disabled={isGenerating}
+        >
           {isGenerating ? "Generating..." : "Generate"}
         </button>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <FaTimes className="close-icon" onClick={() => setShowModal(false)} />
+            <button className="close-button" onClick={() => setShowModal(false)}>✕</button>
             {isGenerating ? (
               <div className="spinner"></div>
             ) : (
               <>
                 {generatedImageBlob && (
-                  <img
-                    src={URL.createObjectURL(generatedImageBlob)}
-                    alt="Edited Logo"
-                    className="generated-logo-image"
-                  />
+                  <>
+                    <img
+                      src={URL.createObjectURL(generatedImageBlob)}
+                      alt="Edited Logo"
+                      className="generated-logo-image"
+                    />
+                    <button onClick={downloadGeneratedImage} className="download-button">
+                      Download Edited Logo
+                    </button>
+                  </>
                 )}
-                <button onClick={downloadGeneratedImage} className="download-button">
-                  Download Edited Logo
-                </button>
               </>
             )}
           </div>

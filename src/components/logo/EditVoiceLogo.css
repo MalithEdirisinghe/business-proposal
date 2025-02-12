@@ -1,163 +1,177 @@
 .edit-voice-logo-container {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    background-color: #f4f4f4;
-    font-family: Arial, sans-serif;
-  }
-  
-  .left-panel {
-    width: 40%;
-    background-color: #003366;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  .branding h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .instruction h2 {
-    font-size: 1.5rem;
-    text-align: center;
-    line-height: 1.5;
-  }
-  
-  .dots-section {
-    display: flex;
-    margin-top: 20px;
-  }
-  
-  .dot {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    margin: 0 5px;
-  }
-  
-  .dot.yellow {
-    background-color: #ffcc00;
-  }
-  
-  .dot.green {
-    background-color: #33cc33;
-  }
-  
-  .dot.blue {
-    background-color: #3399ff;
-  }
-  
-  .dot.red {
-    background-color: #ff3300;
-  }
-  
-  .right-panel {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: #ffcc33;
-  }
-  
-  .right-panel h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  
-  .image-placeholder {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ddd;
-    width: 300px;
-    height: 300px;
-    border-radius: 10px;
-  }
-  
-  .logo-image {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 10px;
-  }
-  
-  .microphone-icon {
-    margin-top: 20px;
-  }
-  
-  .voice-input-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .voice-input-row label {
-    flex: 1;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .voice-input-row input {
-    flex: 2;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .microphone-button {
-    flex: 0;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 10px;
-    transition: background-color 0.3s;
-  }
-  
-  .microphone-button:hover {
-    background-color: #45a049;
-  }
-  
-  .microphone-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  .download-button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .download-button:hover {
-    background-color: #45a049;
-  }
-  
-  .download-button:active {
-    background-color: #3e8e41;
-  }
-  
-  .download-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
+  display: flex;
+  flex-direction: row;
+  background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+}
+
+.left-panel {
+  width: 40%;
+  background-color: #003366;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.branding h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.instruction h2 {
+  font-size: 1.5rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.dots-section {
+  display: flex;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.dot.yellow {
+  background-color: #ffcc00;
+}
+
+.dot.green {
+  background-color: #33cc33;
+}
+
+.dot.blue {
+  background-color: #3399ff;
+}
+
+.dot.red {
+  background-color: #ff3300;
+}
+
+.right-panel {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #ffcc33;
+}
+
+.right-panel h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.image-placeholder {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ddd;
+  width: 300px;
+  height: 300px;
+  border-radius: 10px;
+}
+
+.logo-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+}
+
+.microphone-icon {
+  margin-top: 20px;
+}
+
+.voice-input-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.voice-input-row label {
+  flex: 0 0 120px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #002855;
+}
+
+.voice-input-row input {
+  flex: 1;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.microphone-button {
+  width: 55px;
+  height: 52px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.microphone-button:hover {
+  background-color: #45a049;
+}
+
+.microphone-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+.microphone-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.download-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #45a049;
+}
+
+.download-button:active {
+  background-color: #3e8e41;
+}
+
+.download-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.mic-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'%3E%3C/path%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'%3E%3C/path%3E%3Cline x1='12' y1='19' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='8' y1='23' x2='16' y2='23'%3E%3C/line%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: inline-block;
+}
