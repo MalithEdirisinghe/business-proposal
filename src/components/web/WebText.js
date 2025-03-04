@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./WebText.css";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingModal from "./LoadingModal"; // Import the new LoadingModal component
 
 const templates = {
     template1: {
@@ -63,13 +63,22 @@ const templates = {
 
 const WebText = () => {
     const [selectedTemplate, setSelectedTemplate] = useState("template1");
-    const [formData, setFormData] = useState(templates[selectedTemplate].data);
+    const [formData, setFormData] = useState(templates.template1.data);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleTemplateChange = (e) => {
-        setSelectedTemplate(e.target.value);
-        setFormData(templates[e.target.value].data);
+    // Function to randomly select a template
+    const getRandomTemplate = () => {
+        const templateKeys = Object.keys(templates);
+        const randomIndex = Math.floor(Math.random() * templateKeys.length);
+        return templateKeys[randomIndex];
     };
+
+    // Select a random template when the component mounts
+    useEffect(() => {
+        const randomTemplate = getRandomTemplate();
+        setSelectedTemplate(randomTemplate);
+        setFormData(templates[randomTemplate].data);
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -91,6 +100,8 @@ const WebText = () => {
         const updatedServices = formData.services.filter((_, i) => i !== index);
         setFormData({ ...formData, services: updatedServices });
     };
+
+    // Modify the handleSubmit function in your WebText.jsx component:
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -123,7 +134,7 @@ const WebText = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/zip'
+                    'Accept': 'application/json' // Changed to expect JSON response
                 },
                 body: JSON.stringify(requestData)
             });
@@ -132,8 +143,23 @@ const WebText = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Get the response as a blob
-            const blob = await response.blob();
+            // Parse the JSON response first
+            const responseData = await response.json();
+
+            // Get the base64 data
+            const base64Data = responseData.zip_file_base64;
+
+            if (!base64Data) {
+                throw new Error('No ZIP file data received from server');
+            }
+
+            // Convert base64 to blob
+            const binaryString = window.atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'application/zip' });
 
             // Create a download link and trigger it
             const url = window.URL.createObjectURL(blob);
@@ -156,20 +182,16 @@ const WebText = () => {
 
     return (
         <>
-            {isLoading && <LoadingSpinner />}
+            {/* Replace the LoadingSpinner with our new LoadingModal */}
+            <LoadingModal isVisible={isLoading} />
+
             <div className="container">
                 <h1 className="heading">Web Template Generator</h1>
                 <div className="form-container">
-                    <label className="label">Select Template:</label>
-                    <select
-                        value={selectedTemplate}
-                        onChange={handleTemplateChange}
-                        className="select"
-                    >
-                        <option value="template1">Template 1</option>
-                        <option value="template2">Template 2</option>
-                        <option value="template3">Template 3</option>
-                    </select>
+                    {/* Display which template was randomly selected */}
+                    <div className="template-info">
+                        <p className="template-notification">Using {selectedTemplate.replace("template", "Template ")}</p>
+                    </div>
                     <form onSubmit={handleSubmit} className="form">
                         {Object.keys(formData).map((key) => (
                             key !== "services" && key !== "footer_contact_details" &&

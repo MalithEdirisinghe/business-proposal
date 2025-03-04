@@ -173,6 +173,12 @@ const EditTextLogo = () => {
               <option value="green">Green</option>
               <option value="blue">Blue</option>
               <option value="black">Black</option>
+              <option value="yellow">Yellow</option>
+              <option value="purple">Purple</option>
+              <option value="orange">Orange</option>
+              <option value="pink">Pink</option>
+              <option value="brown">Brown</option>
+              <option value="gray">Gray</option>
             </select>
           </div>
 
@@ -184,9 +190,16 @@ const EditTextLogo = () => {
               onChange={(e) => setNameColor(e.target.value)}
             >
               <option value="white">White</option>
+              <option value="red">Red</option>
+              <option value="green">Green</option>
+              <option value="blue">Blue</option>
+              <option value="black">Black</option>
               <option value="yellow">Yellow</option>
               <option value="purple">Purple</option>
-              <option value="black">Black</option>
+              <option value="orange">Orange</option>
+              <option value="pink">Pink</option>
+              <option value="brown">Brown</option>
+              <option value="gray">Gray</option>
             </select>
           </div>
 
@@ -198,9 +211,16 @@ const EditTextLogo = () => {
               onChange={(e) => setSloganColor(e.target.value)}
             >
               <option value="white">White</option>
+              <option value="red">Red</option>
+              <option value="green">Green</option>
+              <option value="blue">Blue</option>
+              <option value="black">Black</option>
               <option value="yellow">Yellow</option>
               <option value="purple">Purple</option>
-              <option value="black">Black</option>
+              <option value="orange">Orange</option>
+              <option value="pink">Pink</option>
+              <option value="brown">Brown</option>
+              <option value="gray">Gray</option>
             </select>
           </div>
         </div>
