@@ -9,8 +9,6 @@ import template5 from "../assets/templates/template5.png";
 import template6 from "../assets/templates/template6.png";
 import template7 from "../assets/templates/template7.png";
 import template8 from "../assets/templates/template8.png";
-import template9 from "../assets/templates/template9.png";
-import template10 from "../assets/templates/template10.png";
 
 const CoverTemplateGenerator = () => {
   const navigate = useNavigate();
@@ -24,8 +22,6 @@ const CoverTemplateGenerator = () => {
     { id: 6, title: "Template 6", image: template6 },
     { id: 7, title: "Template 7", image: template7 },
     { id: 8, title: "Template 8", image: template8 },
-    { id: 9, title: "Template 9", image: template9 },
-    { id: 10, title: "Template 10", image: template10 },
   ];
 
   const handleSelectTemplate = (template) => {

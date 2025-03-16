@@ -73,16 +73,15 @@ const CoverPage3 = () => {
           </p>
         </div>
       </div>
-
-      {/* Buttons Section */}
-      <div className="buttons-section">
-        <button className="edit-button" onClick={() => setIsModalOpen(true)}>
-          Edit Cover
-        </button>
-        <button className="use-template-button" onClick={handleUseTemplate}>
-          Use this Template
-        </button>
-      </div>
+        {/* Buttons Section */}
+        <div className="buttons-section1">
+          <button className="edit-button" onClick={() => setIsModalOpen(true)}>
+            Edit Cover
+          </button>
+          <button className="use-template-button" onClick={handleUseTemplate}>
+            Use this Template
+          </button>
+        </div>
 
       {/* Modal for Editing */}
       {isModalOpen && (

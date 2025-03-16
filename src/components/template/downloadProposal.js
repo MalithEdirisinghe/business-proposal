@@ -25,4 +25,3 @@ export const downloadProposal = async (imageBlob) => {
       console.error("Error downloading proposal:", error);
     }
   };
-  

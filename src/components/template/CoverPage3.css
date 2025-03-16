@@ -97,4 +97,32 @@
   .cover-page3-footer {
     z-index: 2;
   }
-  
+  /* Footer for buttons */
+.buttons-section1 {
+  position: absolute;
+  top: 1100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+}
+
+.edit-button,
+.use-template-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.use-template-button {
+  background-color: #007bff;
+  color: white;
+}

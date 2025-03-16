@@ -6,7 +6,7 @@ const ProposalForm = () => {
   const [businessName, setBusinessName] = useState("");
   const [businessDomain, setBusinessDomain] = useState("Agriculture");
   const [isExisting, setIsExisting] = useState("Yes");
-  const [userInstructions, setUserInstructions] = useState("");
+  const [userInstructions, setUserInstructions] = useState("Create proposal using 500 words");
   const [selectedTemplate, setSelectedTemplate] = useState("Template 1");
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +122,7 @@ const ProposalForm = () => {
             <option value="No">No</option>
           </select>
         </div>
-
+{/* 
         <div className="form-group">
           <label>User Instructions:</label>
           <textarea
@@ -132,9 +132,9 @@ const ProposalForm = () => {
             required
             rows="4"
           />
-        </div>
+        </div> */}
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label>Select Template:</label>
           <select
             value={selectedTemplate}
@@ -145,7 +145,7 @@ const ProposalForm = () => {
             <option value="Template 2">Template 2</option>
             <option value="Template 3">Template 3</option>
           </select>
-        </div>
+        </div> */}
 
         <button type="submit" className="submit-button" disabled={isLoading}>
           {isLoading ? (
