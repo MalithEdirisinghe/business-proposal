@@ -510,7 +510,7 @@ const TextRecord = () => {
                   try {
                     if (pdfData) {
                       if (language === "Sinhala") {
-                        // Extract text from PDF
+                        // Extract text from uploaded PDF
                         const reader = new FileReader();
                         const pdfText = await new Promise((resolve, reject) => {
                           reader.onload = async (event) => {
@@ -533,10 +533,10 @@ const TextRecord = () => {
                           reader.readAsArrayBuffer(pdfData);
                         });
 
-                        // Translate the extracted text
+                        // Translate extracted text from Sinhala to English
                         const translatedText = await translateSinhalaToEnglish(pdfText);
 
-                        // Create new PDF with translated text
+                        // Create a new PDF with the translated text
                         const doc = new jsPDF();
                         doc.setFont("NotoSansSinhala");
                         doc.setFontSize(12);
@@ -556,24 +556,22 @@ const TextRecord = () => {
                         });
 
                         // Save the translated PDF
-                        doc.save("translated_proposal.pdf");
                         const pdfBlob = doc.output("blob");
                         generatedPdfFile = new File([pdfBlob], "translated_proposal.pdf", { type: "application/pdf" });
-                      } else {
-                        // If English, use original PDF
-                        const url = URL.createObjectURL(pdfData);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = 'save.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(url);
 
+                      } else {
+                        // If language is English, use the uploaded PDF as it is
                         generatedPdfFile = pdfData;
                       }
                     } else {
-                      // Generate PDF from text
+                      // No PDF uploaded, create a new PDF from text input
+                      let textToInclude = text.trim();
+
+                      if (!textToInclude) {
+                        alert("No text provided to generate PDF.");
+                        return;
+                      }
+
                       const doc = new jsPDF();
                       doc.setFont("NotoSansSinhala");
                       doc.setFontSize(12);
@@ -582,7 +580,12 @@ const TextRecord = () => {
                       let y = margin;
                       const pageWidth = doc.internal.pageSize.getWidth();
 
-                      const splitText = doc.splitTextToSize(translateText, pageWidth - margin * 2);
+                      if (language === "Sinhala") {
+                        // Translate text from Sinhala to English before saving
+                        textToInclude = await translateSinhalaToEnglish(textToInclude);
+                      }
+
+                      const splitText = doc.splitTextToSize(textToInclude, pageWidth - margin * 2);
                       splitText.forEach((line) => {
                         if (y > doc.internal.pageSize.getHeight() - margin) {
                           doc.addPage();
@@ -591,7 +594,8 @@ const TextRecord = () => {
                         doc.text(line, margin, y);
                         y += lineHeight;
                       });
-                      doc.save("save.pdf");
+
+                      // Save the PDF
                       const pdfBlob = doc.output("blob");
                       generatedPdfFile = new File([pdfBlob], "generated_proposal.pdf", { type: "application/pdf" });
                     }
