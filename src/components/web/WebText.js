@@ -106,19 +106,18 @@ const WebText = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
+    
         // Format the services array
         const formattedServices = formData.services.map(service => ({
             name: service.name.trim(),
             description: service.description.trim(),
             image: service.image.trim()
         }));
-
+    
         // Create a new object with formatted data
         const requestData = {
             ...formData,
             services: formattedServices,
-            // Ensure arrays are properly formatted
             home_paragraphs: Array.isArray(formData.home_paragraphs)
                 ? formData.home_paragraphs
                 : [formData.home_paragraphs],
@@ -126,59 +125,45 @@ const WebText = () => {
                 ? formData.home_images
                 : [formData.home_images],
         };
-
+    
         const endpoint = templates[selectedTemplate].endpoint;
-
+    
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json' // Changed to expect JSON response
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(requestData)
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            // Parse the JSON response first
-            const responseData = await response.json();
-
-            // Get the base64 data
-            const base64Data = responseData.zip_file_base64;
-
-            if (!base64Data) {
-                throw new Error('No ZIP file data received from server');
-            }
-
-            // Convert base64 to blob
-            const binaryString = window.atob(base64Data);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            const blob = new Blob([bytes], { type: 'application/zip' });
-
-            // Create a download link and trigger it
+    
+            // Convert response to a blob (binary data)
+            const blob = await response.blob();
+    
+            // Create a temporary download link
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'website.zip';
+            a.download = 'website.zip'; // Set the file name
             document.body.appendChild(a);
             a.click();
+    
+            // Clean up
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
-
+    
             alert('Website files downloaded successfully!');
         } catch (error) {
             console.error('Error:', error);
             alert(`Error: ${error.message}`);
         } finally {
-            setIsLoading(false);  // Stop loading regardless of outcome
+            setIsLoading(false);
         }
-    };
+    };    
 
     return (
         <>
