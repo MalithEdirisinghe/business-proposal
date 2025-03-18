@@ -47,10 +47,10 @@ const WebVoice = () => {
             setIsLoading(true);
             setProcessingField(field);
             console.log("Processing audio for field:", field);
-            
+
             const base64Audio = await blobToBase64(audioBlob);
             console.log("Audio converted to base64");
-            
+
             // Upload to cloud storage
             console.log("Uploading to cloud storage...");
             const cloudFunctionResponse = await fetch('https://us-central1-bizconnect-446515.cloudfunctions.net/function-1', {
@@ -94,20 +94,20 @@ const WebVoice = () => {
             );
 
             const googleData = await googleResponse.json();
-            
+
             if (!googleResponse.ok) {
                 throw new Error(`Speech-to-Text Error: ${JSON.stringify(googleData)}`);
             }
 
             const transcript = googleData.results?.[0]?.alternatives?.[0]?.transcript;
-            
+
             if (!transcript) {
                 throw new Error('No transcript received from Speech-to-Text service');
             }
 
             console.log("Received transcript:", transcript);
             console.log("For field:", field);
-            
+
             // Update form data with transcript
             setFormData(prev => {
                 const newData = {
@@ -117,7 +117,7 @@ const WebVoice = () => {
                 console.log("Updated form data:", newData);
                 return newData;
             });
-            
+
             return transcript;
         } catch (error) {
             console.error("Error processing audio:", error);
@@ -137,12 +137,12 @@ const WebVoice = () => {
             chunksRef.current = [];
             console.log("Starting recording for field:", field);
             setEditableField(field);
-            
+
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             console.log("Microphone access granted");
-            
+
             mediaRecorder.current = new MediaRecorder(stream);
-            
+
             mediaRecorder.current.ondataavailable = (event) => {
                 if (event.data.size > 0) {
                     chunksRef.current.push(event.data);
@@ -153,10 +153,10 @@ const WebVoice = () => {
             mediaRecorder.current.onstop = async () => {
                 console.log("Recording stopped, processing audio...");
                 console.log("Current editable field:", editableField);
-                
+
                 const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
                 console.log("Audio blob created, size:", audioBlob.size);
-                
+
                 // Process the audio with the current field value
                 await processAudio(audioBlob, field);
             };
@@ -175,7 +175,7 @@ const WebVoice = () => {
         if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
             console.log("Manually stopping recording");
             mediaRecorder.current.stop();
-            
+
             if (mediaRecorder.current.stream) {
                 mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
             }
@@ -193,7 +193,7 @@ const WebVoice = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Field validation logic remains the same
         const requiredFields = [
             "description",
@@ -202,17 +202,17 @@ const WebVoice = () => {
             "home_paragraphs",
             "about_description"
         ];
-    
+
         for (let field of requiredFields) {
             if (!formData[field] || formData[field].trim() === "") {
                 alert(`Please fill in the ${field.replace("_", " ")} field.`);
                 return;
             }
         }
-    
+
         // Set submitting state to true to show the modal
         setIsSubmitting(true);
-        
+
         try {
             // Form submission logic...
             const formattedServices = formData.services.map(service => ({
@@ -220,42 +220,26 @@ const WebVoice = () => {
                 description: service.description.trim(),
                 image: service.image.trim()
             }));
-        
-            const updatedFormData = { 
-                ...formData, 
-                services: formattedServices 
+
+            const updatedFormData = {
+                ...formData,
+                services: formattedServices
             };
-        
+
             console.log("Generated JSON:", JSON.stringify(updatedFormData, null, 2));
-        
+
             const endpoint = template1.endpoint;
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedFormData)
             });
-        
+
             if (response.ok) {
-                const result = await response.json();
-        
-                if (result.zip_file_base64) {
-                    // File download logic...
-                    const byteCharacters = atob(result.zip_file_base64);
-                    const byteArrays = [];
-        
-                    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-                        const slice = byteCharacters.slice(offset, offset + 512);
-                        const byteNumbers = new Array(slice.length);
-        
-                        for (let i = 0; i < slice.length; i++) {
-                            byteNumbers[i] = slice.charCodeAt(i);
-                        }
-        
-                        const byteArray = new Uint8Array(byteNumbers);
-                        byteArrays.push(byteArray);
-                    }
-        
-                    const blob = new Blob(byteArrays, { type: 'application/zip' });
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/zip")) {
+                    // Handle ZIP file response
+                    const blob = await response.blob();
                     const zipFileUrl = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = zipFileUrl;
@@ -264,7 +248,8 @@ const WebVoice = () => {
                     a.click();
                     document.body.removeChild(a);
                 } else {
-                    alert("No base64 data found in the response.");
+                    const result = await response.json();
+                    // Handle JSON response if necessary
                 }
             } else {
                 alert("Submission failed.");
@@ -314,12 +299,12 @@ const WebVoice = () => {
                                     value={formData[key]}
                                     onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                                     className="input"
-                                    disabled={key !== "logo_url" && key !== "home_image_url" && key !== "service_image" && key !== "home_images" }
+                                    disabled={key !== "logo_url" && key !== "home_image_url" && key !== "service_image" && key !== "home_images"}
                                 />
                                 {key !== "logo_url" && key !== "home_image_url" && key !== "home_images" && key !== "service_image" && (
-                                    <button 
-                                        type="button" 
-                                        onClick={() => toggleListening(key)} 
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleListening(key)}
                                         className="mic-button"
                                         disabled={isLoading}
                                     >
