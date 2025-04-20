@@ -101,20 +101,16 @@ const WebText = () => {
         setFormData({ ...formData, services: updatedServices });
     };
 
-    // Modify the handleSubmit function in your WebText.jsx component:
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
     
-        // Format the services array
         const formattedServices = formData.services.map(service => ({
             name: service.name.trim(),
             description: service.description.trim(),
             image: service.image.trim()
         }));
     
-        // Create a new object with formatted data
         const requestData = {
             ...formData,
             services: formattedServices,
@@ -131,32 +127,34 @@ const WebText = () => {
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)
             });
     
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+            const result = await response.json();
+    
+            if (result.zip_file_base64) {
+                const byteCharacters = atob(result.zip_file_base64);
+                const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'application/zip' });
+    
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'website.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+    
+                alert('Website files downloaded successfully!');
+            } else {
+                throw new Error("No zip_file_base64 found in response.");
             }
     
-            // Convert response to a blob (binary data)
-            const blob = await response.blob();
-    
-            // Create a temporary download link
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'website.zip'; // Set the file name
-            document.body.appendChild(a);
-            a.click();
-    
-            // Clean up
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-    
-            alert('Website files downloaded successfully!');
         } catch (error) {
             console.error('Error:', error);
             alert(`Error: ${error.message}`);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faStop, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import "./WebVoice.css";
@@ -191,10 +191,80 @@ const WebVoice = () => {
         }
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     // Field validation logic remains the same
+    //     const requiredFields = [
+    //         "description",
+    //         "website_name",
+    //         "home_description",
+    //         "home_paragraphs",
+    //         "about_description"
+    //     ];
+
+    //     for (let field of requiredFields) {
+    //         if (!formData[field] || formData[field].trim() === "") {
+    //             alert(`Please fill in the ${field.replace("_", " ")} field.`);
+    //             return;
+    //         }
+    //     }
+
+    //     // Set submitting state to true to show the modal
+    //     setIsSubmitting(true);
+
+    //     try {
+    //         // Form submission logic...
+    //         const formattedServices = formData.services.map(service => ({
+    //             name: service.name.trim(),
+    //             description: service.description.trim(),
+    //             image: service.image.trim()
+    //         }));
+
+    //         const updatedFormData = {
+    //             ...formData,
+    //             services: formattedServices
+    //         };
+
+    //         console.log("Generated JSON:", JSON.stringify(updatedFormData, null, 2));
+
+    //         const endpoint = template1.endpoint;
+    //         const response = await fetch(endpoint, {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(updatedFormData)
+    //         });
+
+    //         if (response.ok) {
+    //             const contentType = response.headers.get("content-type");
+    //             if (contentType && contentType.includes("application/zip")) {
+    //                 // Handle ZIP file response
+    //                 const blob = await response.blob();
+    //                 const zipFileUrl = window.URL.createObjectURL(blob);
+    //                 const a = document.createElement('a');
+    //                 a.href = zipFileUrl;
+    //                 a.download = 'generated_files.zip';
+    //                 document.body.appendChild(a);
+    //                 a.click();
+    //                 document.body.removeChild(a);
+    //             } else {
+    //                 const result = await response.json();
+    //                 // Handle JSON response if necessary
+    //             }
+    //         } else {
+    //             alert("Submission failed.");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //         alert("Submission failed.");
+    //     } finally {
+    //         setIsSubmitting(false); // Set back to false when done
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Field validation logic remains the same
+    
         const requiredFields = [
             "description",
             "website_name",
@@ -202,65 +272,79 @@ const WebVoice = () => {
             "home_paragraphs",
             "about_description"
         ];
-
+    
         for (let field of requiredFields) {
             if (!formData[field] || formData[field].trim() === "") {
                 alert(`Please fill in the ${field.replace("_", " ")} field.`);
                 return;
             }
         }
-
-        // Set submitting state to true to show the modal
+    
         setIsSubmitting(true);
-
+    
         try {
-            // Form submission logic...
             const formattedServices = formData.services.map(service => ({
                 name: service.name.trim(),
                 description: service.description.trim(),
                 image: service.image.trim()
             }));
-
+    
             const updatedFormData = {
                 ...formData,
-                services: formattedServices
+                services: formattedServices,
+                home_paragraphs: Array.isArray(formData.home_paragraphs)
+                    ? formData.home_paragraphs
+                    : [formData.home_paragraphs],
+                home_images: Array.isArray(formData.home_images)
+                    ? formData.home_images
+                    : [formData.home_images],
             };
-
-            console.log("Generated JSON:", JSON.stringify(updatedFormData, null, 2));
-
+    
             const endpoint = template1.endpoint;
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedFormData)
             });
-
-            if (response.ok) {
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/zip")) {
-                    // Handle ZIP file response
-                    const blob = await response.blob();
-                    const zipFileUrl = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = zipFileUrl;
-                    a.download = 'generated_files.zip';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } else {
-                    const result = await response.json();
-                    // Handle JSON response if necessary
-                }
-            } else {
-                alert("Submission failed.");
+    
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
             }
+    
+            const result = await response.json();
+    
+            if (result.zip_file_base64) {
+                // Convert base64 string to binary blob
+                const byteCharacters = atob(result.zip_file_base64);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'application/zip' });
+    
+                // Trigger download
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'website.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+    
+                alert("Website files downloaded successfully!");
+            } else {
+                throw new Error("zip_file_base64 not found in response");
+            }
+    
         } catch (error) {
             console.error("Error:", error);
-            alert("Submission failed.");
+            alert(`Submission failed: ${error.message}`);
         } finally {
-            setIsSubmitting(false); // Set back to false when done
+            setIsSubmitting(false);
         }
-    };
+    };    
 
     // Define handleServiceChange
     const handleServiceChange = (e, index) => {
