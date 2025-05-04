@@ -11,7 +11,7 @@ const EditTextLogo = () => {
   // Updated state variables to match API parameters
   const [logoName, setLogoName] = useState("");
   const [slogan, setSlogan] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [backgroundColor, setBackgroundColor] = useState("Select Color if you want");
   const [fontSize, setFontSize] = useState(22);
   const [position, setPosition] = useState("bottom");
   const [nameColor, setNameColor] = useState("yellow");
@@ -168,6 +168,7 @@ const EditTextLogo = () => {
               value={backgroundColor}
               onChange={(e) => setBackgroundColor(e.target.value)}
             >
+              <option value="Select Color if you want">Select Color if you want</option>
               <option value="white">White</option>
               <option value="red">Red</option>
               <option value="green">Green</option>

@@ -9,7 +9,7 @@ const EditVoiceLogo = () => {
 
   const [logoName, setLogoName] = useState("");
   const [slogan, setSlogan] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [backgroundColor, setBackgroundColor] = useState("Select Color if you want");
   const [fontSize, setFontSize] = useState(22);
   const [position, setPosition] = useState("bottom");
   const [nameColor, setNameColor] = useState("black");
@@ -31,7 +31,7 @@ const EditVoiceLogo = () => {
       const spokenText = event.results[0][0].transcript.trim().toLowerCase().replace(/[.,!?]+$/, "");
 
       const handleColorInput = (text, setter) => {
-        const validColors = ["white", "red", "green", "blue", "black", "yellow", "purple"];
+        const validColors = ["Select Color if you want", "white", "red", "green", "blue", "black", "yellow", "purple"];
         if (validColors.includes(text)) {
           setter(text);
         } else {
