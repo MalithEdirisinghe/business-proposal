@@ -58,7 +58,7 @@ const EditVoiceLogo = () => {
           }
           break;
         case "position":
-          const validPositions = ["top", "bottom"];
+          const validPositions = ["top", "bottom", "center", "left", "right"];
           if (validPositions.includes(spokenText)) {
             setPosition(spokenText);
           } else {
